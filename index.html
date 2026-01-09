@@ -83,6 +83,10 @@
             background: none; border: none; padding: 0.5rem; cursor: pointer; color: #94a3b8;
             border-radius: 8px; font-weight: 700; font-size: 0.85rem;
             display: flex; align-items: center; gap: 0.3rem;
+            
+            /* ✅ 핵심 수정: PC에서도 절대 줄바꿈 금지 & 찌그러짐 방지 */
+            white-space: nowrap; 
+            flex-shrink: 0;
         }
         .header-btn svg { width: 1.1rem; height: 1.1rem; stroke-width: 2.5; }
         .header-btn.active { color: var(--primary-color); background: #eff6ff; }
@@ -1496,3 +1500,4 @@ init();
 </script>
 </body>
 </html>
+
