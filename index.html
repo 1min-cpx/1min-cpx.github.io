@@ -1,25 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#ffffff">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="1분 CPX">
-    
-    <meta name="author" content="KNU FM JSW">
-    <meta name="description" content="의사 국가고시 실기(CPX) 대비를 위한 1분 타이머 및 케이스 스터디 웹앱. Created by KNU FM JSW">
-    <meta name="copyright" content="Copyright © 2025 KNU FM JSW All rights reserved.">
-    <meta property="og:title" content="1분 CPX - 실기시험 순발력 훈련">
-    <meta property="og:description" content="C.C를 보고 1분 안에 연상하는 실전 감각 연습. 제작: KNU FM JSW">
-
-    <title>1분 CPX v1.0</title>
-    
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIzMiIgeT0iMzIiIHdpZHRoPSI0NDgiIGhlaWdodD0iNDQ4IiByeD0iMTIwIiByeT0iMTIwIiBmaWxsPSIjMjU2M2ViIiAvPjxyZWN0IHg9IjIxNiIgeT0iMTEyIiB3aWR0aD0iODAiIGhlaWdodD0iMjg4IiBmaWxsPSJ3aGl0ZSIgcng9IjE2IiAvPjxyZWN0IHg9IjExMiIgeT0iMjE2IiB3aWR0aD0iMjg4IiBoZWlnaHQ9IjgwIiBmaWxsPSJ3aGl0ZSIgcng9IjE2IiAvPjxsaW5lIHgxPSIyNTYiIHkxPSIyNTYiIHgyPSIzNjAiIHkyPSIxNjAiIHN0cm9rZT0iI2VmNDQ0NCIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMjQiIGZpbGw9IiNlZjQ0NDQiIC8+PC9zdmc+">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIzMiIgeT0iMzIiIHdpZHRoPSI0NDgiIGhlaWdodD0iNDQ4IiByeD0iMTIwIiByeT0iMTIwIiBmaWxsPSIjMjU2M2ViIiAvPjxyZWN0IHg9IjIxNiIgeT0iMTEyIiB3aWR0aD0iODAiIGhlaWdodD0iMjg4IiBmaWxsPSJ3aGl0ZSIgcng9IjE2IiAvPjxyZWN0IHg9IjExMiIgeT0iMjE2IiB3aWR0aD0iMjg4IiBoZWlnaHQ9IjgwIiBmaWxsPSJ3aGl0ZSIgcng9IjE2IiAvPjxsaW5lIHgxPSIyNTYiIHkxPSIyNTYiIHgyPSIzNjAiIHkyPSIxNjAiIHN0cm9rZT0iI2VmNDQ0NCIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMjQiIGZpbGw9IiNlZjQ0NDQiIC8+PC9zdmc+">
-
-    <style>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="1분 CPX">
+  <meta name="author" content="KNU FM JSW">
+  <meta name="description" content="의사 국가고시 실기(CPX) 대비를 위한 1분 타이머 및 케이스 스터디 웹앱.">
+  <meta property="og:title" content="1분 CPX - 실기시험 순발력 훈련">
+  <meta property="og:description" content="C.C를 보고 1분 안에 연상하는 실전 감각 연습. 제작: KNU FM JSW">
+  <title>1분 CPX v1.1 (OCR)</title>
+  <script src='https://unpkg.com/tesseract.js@5.1.0/dist/tesseract.min.js'></script>
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIzMiIgeT0iMzIiIHdpZHRoPSI0NDgiIGhlaWdodD0iNDQ4IiByeD0iMTIwIiByeT0iMTIwIiBmaWxsPSIjMjU2M2ViIiAvPjxyZWN0IHg9IjIxNiIgeT0iMTEyIiB3aWR0aD0iODAiIGhlaWdodD0iMjg4IiBmaWxsPSJ3aGl0ZSIgcng9IjE2IiAvPjxyZWN0IHg9IjExMiIgeT0iMjE2IiB3aWR0aD0iMjg4IiBoZWlnaHQ9IjgwIiBmaWxsPSJ3aGl0ZSIgcng9IjE2IiAvPjxsaW5lIHgxPSIyNTYiIHkxPSIyNTYiIHgyPSIzNjAiIHkyPSIxNjAiIHN0cm9rZT0iI2VmNDQ0NCIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMjQiIGZpbGw9IiNlZjQ0NDQiIC8+PC9zdmc+">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIzMiIgeT0iMzIiIHdpZHRoPSI0NDgiIGhlaWdodD0iNDQ4IiByeD0iMTIwIiByeT0iMTIwIiBmaWxsPSIjMjU2M2ViIiAvPjxyZWN0IHg9IjIxNiIgeT0iMTEyIiB3aWR0aD0iODAiIGhlaWdodD0iMjg4IiBmaWxsPSJ3aGl0ZSIgcng9IjE2IiAvPjxyZWN0IHg9IjExMiIgeT0iMjE2IiB3aWR0aD0iMjg4IiBoZWlnaHQ9IjgwIiBmaWxsPSJ3aGl0ZSIgcng9IjE2IiAvPjxsaW5lIHgxPSIyNTYiIHkxPSIyNTYiIHgyPSIzNjAiIHkyPSIxNjAiIHN0cm9rZT0iI2VmNDQ0NCIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMjQiIGZpbGw9IiNlZjQ0NDQiIC8+PC9zdmc+">
+  <style>
         :root {
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
@@ -408,317 +404,301 @@
             cursor: pointer; display: flex; justify-content: space-between; align-items: center;
         }
     </style>
-</head>
-<body>
-
-<div class="container">
-    <header>
-        <div class="header-left">
-            <div class="brand-box" onclick="showOnboarding(true)">
-                <span class="main-title">1분 CPX</span>
-                <span class="sub-title">v1.0</span>
-            </div>
-            <div id="timer-badge" class="timer-badge" onclick="openTimerModal()">
-                <svg style="width:1.2rem; height:1.2rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span id="timer-text">60</span>
-            </div>
-        </div>
-        <div class="header-controls">
-            <button class="icon-control-btn" id="btn-reset" onclick="startSession('reset')" style="margin-right:0.3rem;">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-            </button>
-            <button class="icon-control-btn" id="btn-shuffle" onclick="toggleShuffle()" style="margin-right:0.3rem;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
-            </button>
-            <button class="header-btn active" id="btn-mode-study" onclick="switchMode('study')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                학습
-            </button>
-            <button class="header-btn" id="btn-mode-mock" onclick="switchMode('mock-setup')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle></svg>
-                퀴즈
-            </button>
-            <button class="header-btn" id="btn-mode-list" onclick="switchMode('manager')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                목록
-            </button>
-        </div>
-    </header>
-
-    <div id="study-view" class="view-section active">
-        <div class="progress-bar-area"><div class="progress-fill" id="progress-fill"></div></div>
-        <div class="progress-float" id="progress-text">0 / 0</div>
-
-        <div class="card-area">
-            <div class="card-wrapper" id="card-wrapper">
-                <div class="card-face card-front" id="card-front" onclick="flipCard(true)"></div>
-                <div class="card-face card-back">
-                    <div class="back-header">
-                        <button class="nav-btn" onclick="flipCard(false)">문제 보기</button>
-                        <div class="tool-btns">
-                            <button class="icon-btn" onclick="hideCurrentCard()"><svg style="width:1.5rem; height:1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg></button>
-                        </div>
-                    </div>
-                    <div class="cpx-form" id="card-back-form"></div>
-                </div>
-            </div>
-            <div id="empty-state" style="display:none; text-align:center; color:#64748b; padding-top:2rem;">
-                <svg style="width:3rem; height:3rem; margin-bottom:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <h3 style="color:#1e293b; margin-bottom:0.5rem;">학습 종료</h3>
-                <p>모든 카드를 확인했습니다.</p>
-                <button class="btn" style="width:auto; display:inline-block; margin-top:1rem;" onclick="startSession('all')">처음부터 다시</button>
-            </div>
-        </div>
-
-        <div class="controls">
-            <div class="nav-row" id="front-nav">
-                <button class="btn btn-nav" onclick="prevCard()">&lt;</button>
-                <button class="btn btn-main" onclick="flipCard(true)">정답 확인</button>
-                <button class="btn btn-nav" onclick="nextCard()">&gt;</button>
-            </div>
-            <div class="btn-group" id="answer-btns" style="display:none;">
-                <button class="btn btn-red" onclick="handleAnswer(false)">← 몰랐어요</button>
-                <button class="btn btn-green" onclick="handleAnswer(true)">알아요 →</button>
-            </div>
-            <div class="btn-group" id="review-nav" style="display:none;">
-                <button class="btn" style="grid-column: span 2;" onclick="returnToResults()">🔙 결과 화면으로 돌아가기</button>
-            </div>
-        </div>
-        <div class="toast-container"><div id="toast" class="toast">메시지</div></div>
+ </head>
+ <body>
+  <div class="container">
+   <header>
+    <div class="header-left">
+     <div class="brand-box" onclick="showOnboarding(true)">
+      <span class="main-title">1분 CPX</span> <span class="sub-title">v1.1 (OCR)</span>
+     </div>
+     <div id="timer-badge" class="timer-badge" onclick="openTimerModal()">
+      <svg style="width:1.2rem; height:1.2rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span id="timer-text">60</span>
+     </div>
     </div>
-
-    <div id="mock-setup-view" class="view-section" style="background:#fff;">
-        <div class="mock-setup-container">
-            <div class="mock-title">퀴즈 설정</div>
-            <div class="num-input-row">
-                <span style="font-weight:700; font-size:1rem; color:#475569;">문제 수</span>
-                <input type="number" id="mock-num" class="num-input" value="5" min="1" max="48">
-                <span style="font-size:0.9rem; color:#94a3b8;">(단원별 1문제 우선 출제)</span>
-            </div>
-            
-            <div class="tree-container">
-                <div class="tree-header">
-                    <span>출제 범위 선택</span>
-                    <button class="btn" style="padding:0.3rem 0.8rem; font-size:0.8rem; width:auto; height:auto;" onclick="toggleAllMockTree()">전체 선택/해제</button>
-                </div>
-                <div class="tree-content" id="mock-tree-root"></div>
-            </div>
-        </div>
-        <div class="controls">
-            <button class="btn" onclick="startMockExam()">퀴즈 시작</button>
-        </div>
+    <div class="header-controls">
+     <button class="icon-control-btn" id="btn-reset" onclick="startSession('reset')" style="margin-right:0.3rem;">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+     </button>
+     <button class="icon-control-btn" id="btn-shuffle" onclick="toggleShuffle()" style="margin-right:0.3rem;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+       <polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3" /><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21" /><line x1="4" y1="4" x2="9" y2="9" />
+      </svg>
+     </button>
+     <button class="header-btn active" id="btn-mode-study" onclick="switchMode('study')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+       <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      </svg>
+      학습
+     </button>
+     <button class="header-btn" id="btn-mode-mock" onclick="switchMode('mock-setup')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+       <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><circle cx="15.5" cy="15.5" r="1.5" />
+      </svg>
+      퀴즈
+     </button>
+     <button class="header-btn" id="btn-mode-list" onclick="switchMode('manager')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+       <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
+      </svg>
+      목록
+     </button>
     </div>
-
-    <div id="mock-result-view" class="view-section" style="background:#f1f5f9; padding:1.5rem; overflow-y:auto;">
-        <div class="result-card">
-            <div style="font-size:1rem; font-weight:700; color:#64748b;">오늘의 결과</div>
-            <div class="result-score" id="result-score-text">0 / 0</div>
-            <div class="result-msg" id="result-msg">잘했어요!</div>
-            <div id="retry-wrong-btn-area" style="display:none; margin-bottom:1rem;">
-                <button class="btn btn-red" style="width:100%; padding:0.8rem;" onclick="retryWrongAnswers()">
-                    ❌ 틀린 문제만 다시 하기
-                </button>
-            </div>
-            <p style="color:#94a3b8; font-size:0.85rem;">문제를 터치하면 해당 카드로 이동합니다</p>
-        </div>
-        <div class="result-list" id="result-list"></div>
-        <div style="margin-top:auto; padding-bottom:2rem;">
-            <button class="btn" onclick="switchMode('mock-setup')">새로운 퀴즈 하기</button>
-        </div>
+   </header>
+   <div id="study-view" class="view-section active">
+    <div class="progress-bar-area">
+     <div class="progress-fill" id="progress-fill"></div>
     </div>
-
-    <div id="manager-view" class="view-section">
-        <div class="list-action-bar">
-            <button class="btn" style="width:auto; padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="showOnboarding(true)">
-                💡 도움말
-            </button>
-            <button class="btn" style="width:auto; padding:0.4rem 0.8rem; font-size:0.85rem;" id="btn-toggle-all" onclick="toggleAllCards()">
-                ☑️ 전체 선택/해제
-            </button>
+    <div class="progress-float" id="progress-text">0 / 0</div>
+    <div class="card-area">
+     <div class="card-wrapper" id="card-wrapper">
+      <div class="card-face card-front" id="card-front" onclick="flipCard(true)"></div>
+      <div class="card-face card-back">
+       <div class="back-header">
+        <button class="nav-btn" onclick="flipCard(false)">문제 보기</button>
+        <div class="tool-btns">
+         <button class="icon-btn" onclick="hideCurrentCard()">
+          <svg style="width:1.5rem; height:1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+          </svg>
+         </button>
         </div>
-        <div class="list-container" id="list-container"></div>      
-
-        <div class="controls" style="background:#f1f5f9; display:block;">
-            <div class="manager-controls">
-                <button class="btn btn-blue-outline" onclick="exportData()">내보내기</button>
-                <button class="btn btn-blue-outline" onclick="document.getElementById('import-file').click()">가져오기</button>
-                <button class="btn btn-reset-outline" onclick="resetData()">초기화</button>
-                <input type="file" id="import-file" style="display:none" onchange="importData(this)">
-            </div>
-        </div>
+       </div>
+       <div class="cpx-form" id="card-back-form"></div>
+      </div>
+     </div>
+     <div id="empty-state" style="display:none; text-align:center; color:#64748b; padding-top:2rem;">
+      <svg style="width:3rem; height:3rem; margin-bottom:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <h3 style="color:#1e293b; margin-bottom:0.5rem;">학습 종료</h3>
+      <p>모든 카드를 확인했습니다.</p>
+      <button class="btn" style="width:auto; display:inline-block; margin-top:1rem;" onclick="startSession('all')">처음부터 다시</button>
+     </div>
     </div>
-    
-    <div class="modal-overlay" id="input-modal">
-        <div class="modal-content">
-            <div style="padding:1rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:700;">내용 편집</span>
-                <button onclick="closeModal()" style="font-size:1.5rem; background:none; border:none;">&times;</button>
-            </div>
-            <div class="editor-toolbar">
-                <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('bold')">B</button>
-                <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('italic')"><i>I</i></button>
-                <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('underline')"><u>U</u></button>
-                <div style="width:1px; background:#cbd5e1; margin:0 5px;"></div>
-                <button class="color-btn black" onmousedown="event.preventDefault(); execColor('#334155')"></button>
-                <button class="color-btn red" onmousedown="event.preventDefault(); execColor('#ef4444')"></button>
-                <button class="color-btn blue" onmousedown="event.preventDefault(); execColor('#2563eb')"></button>
-            </div>
-            <div style="padding:0 1.5rem 1.5rem; flex:1; display:flex; flex-direction:column; overflow:hidden;">
-                <div class="input-group">
-                    <label>🔑 키워드 / 암기법</label>
-                    <div id="modal-editor-key" class="rich-editor" contenteditable="true" placeholder="내용을 입력하세요..."></div>
-                </div>
-                <div class="input-group" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
-                    <label>📝 상세 해설</label>
-                    <div id="modal-editor-val" class="rich-editor detail" contenteditable="true" placeholder="상세 해설을 입력하세요..."></div>
-                </div>
-            </div>
-            <input type="hidden" id="modal-field-key">
-            <div style="padding:1rem; border-top:1px solid #e2e8f0;">
-                <button class="btn" onclick="saveFieldData()">저장 완료</button>
-            </div>
-        </div>
+    <div class="controls">
+     <div class="nav-row" id="front-nav">
+      <button class="btn btn-nav" onclick="prevCard()">&lt;</button>
+      <button class="btn btn-main" onclick="flipCard(true)">정답 확인</button>
+      <button class="btn btn-nav" onclick="nextCard()">&gt;</button>
+     </div>
+     <div class="btn-group" id="answer-btns" style="display:none;">
+      <button class="btn btn-red" onclick="handleAnswer(false)">← 몰랐어요</button>
+      <button class="btn btn-green" onclick="handleAnswer(true)">알아요 →</button>
+     </div>
+     <div class="btn-group" id="review-nav" style="display:none;">
+      <button class="btn" style="grid-column: span 2;" onclick="returnToResults()">🔙 결과 화면으로 돌아가기</button>
+     </div>
     </div>
-
-    <div class="modal-overlay" id="manager-preview-modal">
-        <div class="modal-content" style="position:relative;">
-            <div id="edit-help-overlay" onclick="closeEditHelp()">
-                <div style="margin-top:4rem; text-align:left;">
-                    <div class="edit-help-arrow">⬆️</div>
-                    <div class="edit-help-text">
-                        카드 뒷면에 포함될 항목을<br>선택할 수 있습니다.
-                    </div>
-                    <div class="edit-help-arrow" style="margin-top:2rem;">⬇️</div>
-                    <div class="edit-help-text">
-                        각 항목을 눌러<br>나만의 암기법과 해설을<br>작성하세요.
-                    </div>
-                    <div style="margin-top:auto; text-align:center; color:#cbd5e1; font-weight:400; font-size:0.9rem;">
-                        (화면을 터치하면 닫힙니다)
-                    </div>
-                </div>
-            </div>
-
-            <div style="padding:1rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; align-items:center; gap:0.5rem;">
-                    <span style="font-weight:700;" id="manager-preview-title">카드 편집</span>
-                    <button class="icon-btn delete" style="width:28px; height:28px;" onclick="deleteCardData(editTargetId)">
-                        <svg style="width:1.2rem; height:1.2rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </button>
-                </div>
-                <button onclick="document.getElementById('manager-preview-modal').classList.remove('open')" style="font-size:1.5rem; background:none; border:none;">&times;</button>
-            </div>
-            <div class="chip-container" id="preview-chips">
-                <div class="field-chip active" onclick="toggleField(this, 'C')">C</div>
-                <div class="field-chip active" onclick="toggleField(this, 'A')">A</div>
-                <div class="field-chip active" onclick="toggleField(this, 'F')">F</div>
-                <div class="field-chip active" onclick="toggleField(this, 'PEx')">PEx</div>
-                <div class="field-chip active" onclick="toggleField(this, 'Edu')">Edu</div>
-                <div class="field-chip active" onclick="toggleField(this, 'Memo')">Memo</div>
-            </div>
-            <div class="cpx-form" id="manager-preview-form" style="padding:1.5rem;"></div>
-        </div>
+    <div class="toast-container">
+     <div id="toast" class="toast">메시지</div>
     </div>
-
-    <div class="modal-overlay" id="timer-modal">
-        <div class="modal-content" style="height:auto; min-height:30%;">
-            <div style="padding:1rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:700;">타이머 설정</span>
-                <button onclick="closeTimerModal()" style="background:none; border:none; font-size:1.5rem;">&times;</button>
-            </div>
-            <div style="padding:1.5rem;">
-                <button class="timer-option-btn" onclick="setTimerOption('1min')">1분 연습 <span style="font-weight:400; color:#64748b;">60초</span></button>
-                <button class="timer-option-btn" onclick="setTimerOption('unlimited')">무제한 <span style="font-weight:400; color:#64748b;">&infin;</span></button>
-                <button class="timer-option-btn" onclick="setTimerOption('custom')">직접 입력</button>
-            </div>
-        </div>
+   </div>
+   <div id="mock-setup-view" class="view-section" style="background:#fff;">
+    <div class="mock-setup-container">
+     <div class="mock-title">퀴즈 설정</div>
+     <div class="num-input-row">
+      <span style="font-weight:700; font-size:1rem; color:#475569;">문제 수</span> <input type="number" id="mock-num" class="num-input" value="5" min="1" max="48"> <span style="font-size:0.9rem; color:#94a3b8;">(단원별 1문제 우선 출제)</span>
+     </div>
+     <div class="tree-container">
+      <div class="tree-header">
+       <span>출제 범위 선택</span>
+       <button class="btn" style="padding:0.3rem 0.8rem; font-size:0.8rem; width:auto; height:auto;" onclick="toggleAllMockTree()">전체 선택/해제</button>
+      </div>
+      <div class="tree-content" id="mock-tree-root"></div>
+     </div>
     </div>
-
-    <div class="modal-overlay" id="onboarding-modal">
-        <div class="modal-content" style="background:white;">
-            <div class="onboarding-slider" id="onboard-slider">
-                <div class="onboarding-slide">
-                    <div class="slide-icon">
-                        <svg viewBox="0 0 512 512" style="width:6rem; height:6rem;">
-                            <rect x="32" y="32" width="448" height="448" rx="120" ry="120" fill="#2563eb" />
-                            <rect x="216" y="112" width="80" height="288" fill="white" rx="16" />
-                            <rect x="112" y="216" width="288" height="80" fill="white" rx="16" />
-                            <line x1="256" y1="256" x2="360" y2="160" stroke="#ef4444" stroke-width="32" stroke-linecap="round" />
-                            <circle cx="256" cy="256" r="24" fill="#ef4444" />
-                        </svg>
-                    </div>
-                    <div class="slide-title">시간과 장소를<br>가리지 않는 훈련</div>
-                    <div class="slide-desc">
-                        짧은 시간 안에 주소(C.C)를 보고<br>
-                        <b>Associated Sx</b>부터 <b>PEx</b>까지<br>
-                        1분 안에 떠올리는 연습을 위해 만들어졌습니다.<br><br>
-                        <span style="font-size: 0.8rem; color: #94a3b8;">
-                            Created by <b>KNU FM JSW</b>
-                        </span>
-                        <div class="warn-box">
-                            ⚠️ <b>주의:</b> 아직 <b>실기 시험 준비를 시작하지 않았다면</b> 도움이 되지 않을 수 있습니다.
-                        </div>
-                    </div>
-                </div>
-                <div class="onboarding-slide">
-                    <div class="slide-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:5rem; height:5rem;">
-                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                        </svg>
-                    </div>
-                    <div class="slide-title">오늘의 공부를 복습하세요</div>
-                    <div class="slide-desc">
-                        학습모드에서 제한 시간과 순서를 설정해 무작위 증례를 학습합니다.<br>
-                        카드 뒷면에서 바로 내용을 수정할 수 있습니다.
-                        <div class="tip-box">
-                            💡 <b>Tip:</b> 1회차 연습을 돌면서,<br><b>그날 진행했던 주제를 복습</b>하는 용도로 추천합니다.
-                        </div>
-                    </div>
-                </div>
-                <div class="onboarding-slide">
-                    <div class="slide-icon">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:5rem; height:5rem;">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 15l2 2 4-4"></path>
-                        </svg>
-                    </div>
-                    <div class="slide-title">실전 감각 키우기</div>
-                    <div class="slide-desc">
-                        퀴즈모드에서 원하는 계통과 문제 수를 설정해 무작위로 테스트합니다.
-                        <div class="tip-box">
-                            💡 <b>Tip:</b> 전체 회독이 끝난<br><b>2회차 이후부터</b>, 전 범위를 선택해 실력을 점검하세요.
-                        </div>
-                    </div>
-                </div>
-                <div class="onboarding-slide">
-                    <div class="slide-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:5rem; height:5rem;">
-                            <line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
-                        </svg>
-                    </div>
-                    <div class="slide-title">나만의 암기법 완성</div>
-                    <div class="slide-desc">
-                        한끝, 유니온, 알렌... 헷갈리지 마세요.<br>
-                        목록에서 <b>연필 아이콘(✏️)</b>을 눌러<br>
-                        내 입에 맞는 키워드를 적어두세요.
-                        <div class="tip-box">
-                            💡 <b>Tip:</b> 지금 바로 목록으로 가서,<br><b>오늘 공부한 주제부터</b> 정리를 시작해보세요!
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="onboarding-nav">
-                <div class="dots">
-                    <div class="dot active"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                </div>
-                <button class="btn" style="width:auto; padding:0.8rem 1.5rem;" id="onboard-next-btn" onclick="nextSlide()">다음</button>
-            </div>
-        </div>
+    <div class="controls">
+     <button class="btn" onclick="startMockExam()">퀴즈 시작</button>
     </div>
-</div>
-
-<script>
+   </div>
+   <div id="mock-result-view" class="view-section" style="background:#f1f5f9; padding:1.5rem; overflow-y:auto;">
+    <div class="result-card">
+     <div style="font-size:1rem; font-weight:700; color:#64748b;">오늘의 결과</div>
+     <div class="result-score" id="result-score-text">0 / 0</div>
+     <div class="result-msg" id="result-msg">잘했어요!</div>
+     <div id="retry-wrong-btn-area" style="display:none; margin-bottom:1rem;">
+      <button class="btn btn-red" style="width:100%; padding:0.8rem;" onclick="retryWrongAnswers()">❌ 틀린 문제만 다시 하기</button>
+     </div>
+     <p style="color:#94a3b8; font-size:0.85rem;">문제를 터치하면 해당 카드로 이동합니다</p>
+    </div>
+    <div class="result-list" id="result-list"></div>
+    <div style="margin-top:auto; padding-bottom:2rem;">
+     <button class="btn" onclick="switchMode('mock-setup')">새로운 퀴즈 하기</button>
+    </div>
+   </div>
+   <div id="manager-view" class="view-section">
+    <div class="list-action-bar">
+     <button class="btn" style="width:auto; padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="showOnboarding(true)">💡 도움말</button>
+     <button class="btn" style="width:auto; padding:0.4rem 0.8rem; font-size:0.85rem;" id="btn-toggle-all" onclick="toggleAllCards()">☑️ 전체 선택/해제</button>
+    </div>
+    <div class="list-container" id="list-container"></div>
+    <div class="controls" style="background:#f1f5f9; display:block;">
+     <div class="manager-controls">
+      <button class="btn btn-blue-outline" onclick="exportData()">내보내기</button>
+      <button class="btn btn-blue-outline" onclick="document.getElementById('import-file').click()">가져오기</button>
+      <button class="btn btn-reset-outline" onclick="resetData()">초기화</button>
+      <input type="file" id="import-file" style="display:none" onchange="importData(this)">
+     </div>
+    </div>
+   </div>
+   <div class="modal-overlay" id="input-modal">
+    <div class="modal-content">
+     <div style="padding:1rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-weight:700;">내용 편집</span>
+      <button onclick="closeModal()" style="font-size:1.5rem; background:none; border:none;">×</button>
+     </div>
+     <div class="editor-toolbar">
+      <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('bold')">B</button>
+      <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('italic')"><i>I</i></button>
+      <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('underline')"><u>U</u></button>
+      <div style="width:1px; background:#cbd5e1; margin:0 5px;"></div>
+      <button class="color-btn black" onmousedown="event.preventDefault(); execColor('#334155')"></button>
+      <button class="color-btn red" onmousedown="event.preventDefault(); execColor('#ef4444')"></button>
+      <button class="color-btn blue" onmousedown="event.preventDefault(); execColor('#2563eb')"></button>
+     </div>
+     <div style="padding:0 1.5rem 1.5rem; flex:1; display:flex; flex-direction:column; overflow:hidden;">
+      <div class="input-group">
+       <label>🔑 키워드 / 암기법</label>
+       <div id="modal-editor-key" class="rich-editor" contenteditable="true" placeholder="내용을 입력하세요..."></div>
+      </div>
+      <div class="input-group" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+       <label>📝 상세 해설</label>
+       <div id="modal-editor-val" class="rich-editor detail" contenteditable="true" placeholder="상세 해설을 입력하세요..."></div>
+      </div>
+     </div>
+     <input type="hidden" id="modal-field-key">
+     <div style="padding:1rem; border-top:1px solid #e2e8f0;">
+      <button class="btn" onclick="saveFieldData()">저장 완료</button>
+     </div>
+    </div>
+   </div>
+   <div class="modal-overlay" id="manager-preview-modal">
+    <div class="modal-content" style="position:relative;">
+     <div id="edit-help-overlay" onclick="closeEditHelp()">
+      <div style="margin-top:4rem; text-align:left;">
+       <div class="edit-help-arrow">⬇️</div>
+       <div class="edit-help-text">
+        카메라(📷) 버튼을 눌러
+        <br>
+        책이나 필기를 찍으면
+        <br>
+        자동으로 내용을 입력해줍니다.
+       </div>
+       <div style="margin-top:auto; text-align:center; color:#cbd5e1; font-weight:400; font-size:0.9rem;">(화면을 터치하면 닫힙니다)</div>
+      </div>
+     </div>
+     <div style="padding:1rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+       <span style="font-weight:700;" id="manager-preview-title">카드 편집</span>
+       <button id="ocr-btn" class="icon-btn" style="width:28px; height:28px;" onclick="triggerOCR()" title="OCR 자동입력">
+        📷
+       </button>
+       <input type="file" id="ocr-input" accept="image/*" capture="environment" style="display:none" onchange="processOCR(this)">
+       <button class="icon-btn delete" style="width:28px; height:28px;" onclick="deleteCardData(editTargetId)">
+        <svg style="width:1.2rem; height:1.2rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+       </button>
+      </div>
+      <button onclick="document.getElementById('manager-preview-modal').classList.remove('open')" style="font-size:1.5rem; background:none; border:none;">×</button>
+     </div>
+     <div class="chip-container" id="preview-chips">
+      <div class="field-chip active" onclick="toggleField(this, 'C')">C</div>
+      <div class="field-chip active" onclick="toggleField(this, 'A')">A</div>
+      <div class="field-chip active" onclick="toggleField(this, 'F')">F</div>
+      <div class="field-chip active" onclick="toggleField(this, 'PEx')">PEx</div>
+      <div class="field-chip active" onclick="toggleField(this, 'Edu')">Edu</div>
+      <div class="field-chip active" onclick="toggleField(this, 'Memo')">Memo</div>
+     </div>
+     <div class="cpx-form" id="manager-preview-form" style="padding:1.5rem;"></div>
+    </div>
+   </div>
+   <div class="modal-overlay" id="timer-modal">
+    <div class="modal-content" style="height:auto; min-height:30%;">
+     <div style="padding:1rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-weight:700;">타이머 설정</span>
+      <button onclick="closeTimerModal()" style="background:none; border:none; font-size:1.5rem;">×</button>
+     </div>
+     <div style="padding:1.5rem;">
+      <button class="timer-option-btn" onclick="setTimerOption('1min')">1분 연습 <span style="font-weight:400; color:#64748b;">60초</span></button>
+      <button class="timer-option-btn" onclick="setTimerOption('unlimited')">무제한 <span style="font-weight:400; color:#64748b;">∞</span></button>
+      <button class="timer-option-btn" onclick="setTimerOption('custom')">직접 입력</button>
+     </div>
+    </div>
+   </div>
+   <div class="modal-overlay" id="onboarding-modal">
+    <div class="modal-content" style="background:white;">
+     <div class="onboarding-slider" id="onboard-slider">
+      <div class="onboarding-slide">
+       <div class="slide-icon">
+        <svg viewBox="0 0 512 512" style="width:6rem; height:6rem;">
+         <rect x="32" y="32" width="448" height="448" rx="120" ry="120" fill="#2563eb" /> <rect x="216" y="112" width="80" height="288" fill="white" rx="16" /> <rect x="112" y="216" width="288" height="80" fill="white" rx="16" /> <line x1="256" y1="256" x2="360" y2="160" stroke="#ef4444" stroke-width="32" stroke-linecap="round" /> <circle cx="256" cy="256" r="24" fill="#ef4444" />
+        </svg>
+       </div>
+       <div class="slide-title">
+        시간과 장소를
+        <br>
+        가리지 않는 훈련
+       </div>
+       <div class="slide-desc">
+        짧은 시간 안에 주소(C.C)를 보고
+        <br>
+        <b>Associated Sx</b>부터 <b>PEx</b>까지
+        <br>
+        1분 안에 떠올리는 연습을 위해 만들어졌습니다.
+        <br>
+        <br>
+        <span style="font-size: 0.8rem; color: #94a3b8;"> Created by <b>KNU FM JSW</b> </span>
+       </div>
+      </div>
+      <div class="onboarding-slide">
+        <div class="slide-icon" style="font-size:4rem;">📷</div>
+        <div class="slide-title">OCR 자동 입력 (New!)</div>
+        <div class="slide-desc">
+         목록에서 카드를 선택하고 카메라 버튼을 누르세요.
+         <br>
+         <b>CPX 책이나 필기</b>를 촬영하면
+         <br>
+         자동으로 텍스트로 변환되어 입력됩니다.
+         <div class="tip-box">
+          💡 <b>Tip:</b> C:, A:, F: 등으로 시작하면
+          <br>
+          자동으로 칸을 나누어 줍니다.
+         </div>
+        </div>
+       </div>
+      <div class="onboarding-slide">
+       <div class="slide-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:5rem; height:5rem;">
+         <rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+        </svg>
+       </div>
+       <div class="slide-title">오늘의 공부를 복습하세요</div>
+       <div class="slide-desc">
+        학습모드에서 제한 시간과 순서를 설정해 무작위 증례를 학습합니다.
+        <br>
+        카드 뒷면에서 바로 내용을 수정할 수 있습니다.
+       </div>
+      </div>
+     </div>
+     <div class="onboarding-nav">
+      <div class="dots">
+       <div class="dot active"></div>
+       <div class="dot"></div>
+       <div class="dot"></div>
+      </div>
+      <button class="btn" style="width:auto; padding:0.8rem 1.5rem;" id="onboard-next-btn" onclick="nextSlide()">다음</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
 // --- DATA & LOGIC ---
 const TOPICS = [
     {id:1, cat:"소화기", title:"01. 급성 복통"}, {id:2, cat:"소화기", title:"02. 소화불량/만성 복통"}, {id:3, cat:"소화기", title:"03. 토혈"},
@@ -847,13 +827,7 @@ function generateCase(card) {
 let cards = [], userData = {}, studyDeck = [], mockResults = [], currentIndex = 0, timerTime = 60, timeLeft = 60, timerInterval = null, isInfinite = false, collapsedCategories = {}, isShuffle = false, editTargetId = null, currentMode = 'study', currentSlide = 0;
 
 function init() {
-    // --- EASTER EGG SIGNATURE ---
-    console.log(
-        "%c 1분 CPX v1.0 \n%c Developed by KNU FM JSW ",
-        "color: white; background: #2563eb; padding: 5px; font-size: 14px; font-weight: bold; border-radius: 4px;",
-        "color: #2563eb; background: white; padding: 5px; font-size: 12px; font-weight: bold;"
-    );
-
+    console.log("%c 1분 CPX v1.1 \n%c OCR Enabled ", "color: white; background: #2563eb; padding: 5px; border-radius: 4px;", "color: #2563eb; background: white; padding: 5px;");
     const savedCards = localStorage.getItem('cpx_v37_cards');
     if(savedCards) cards = JSON.parse(savedCards); else { cards = TOPICS.map(t => ({...t, isVisible: true})); saveCards(); }
     const savedUser = localStorage.getItem('cpx_v37_userdata'); if(savedUser) userData = JSON.parse(savedUser);
@@ -862,19 +836,15 @@ function init() {
     
     updateShuffleUI();
     startSession('init_silent');
-    switchMode('manager'); // Start in MANAGER mode
+    switchMode('manager');
 
     // ONBOARDING
     const introSeen = localStorage.getItem('cpx_v5_onboarding_seen');
     if(!introSeen) showOnboarding(false);
 
-    // SCROLL LISTENER FOR DOTS
     document.getElementById('onboard-slider').addEventListener('scroll', function() {
         const index = Math.round(this.scrollLeft / this.offsetWidth);
-        if(currentSlide !== index) {
-            currentSlide = index;
-            setTimeout(updateDotsOnly, 100);
-        }
+        if(currentSlide !== index) { currentSlide = index; setTimeout(updateDotsOnly, 100); }
     });
 
     document.addEventListener('keydown', (e) => {
@@ -930,19 +900,14 @@ function updateDotsOnly() {
     const dots = document.querySelectorAll('.dot');
     dots.forEach((d, i) => d.classList.toggle('active', i === currentSlide));
     const btn = document.getElementById('onboard-next-btn');
-    btn.innerText = currentSlide === 3 ? "1분 CPX 시작하기" : "다음";
+    btn.innerText = currentSlide === 2 ? "1분 CPX 시작하기" : "다음"; // Slide count adjusted to 3
 }
 
 // EDIT HELP
 function checkEditHelp() {
-    if(!localStorage.getItem('cpx_edit_help_seen')) {
-        document.getElementById('edit-help-overlay').style.display = 'flex';
-    }
+    if(!localStorage.getItem('cpx_edit_help_seen')) { document.getElementById('edit-help-overlay').style.display = 'flex'; }
 }
-function closeEditHelp() {
-    document.getElementById('edit-help-overlay').style.display = 'none';
-    localStorage.setItem('cpx_edit_help_seen', 'true');
-}
+function closeEditHelp() { document.getElementById('edit-help-overlay').style.display = 'none'; localStorage.setItem('cpx_edit_help_seen', 'true'); }
 
 // REST OF LOGIC
 function toggleShuffle() {
@@ -1053,7 +1018,6 @@ function showMockResult() {
     else msg = "🔥 더 분발해야 해요! 기본기를 다져보세요.";
     document.getElementById('result-msg').innerText = msg;
 
-    // 틀린 문제가 있으면 버튼 보이기
     const hasWrong = total - correctCount > 0;
     document.getElementById('retry-wrong-btn-area').style.display = hasWrong ? 'block' : 'none';
 
@@ -1104,10 +1068,116 @@ function updateTimerUI() {
     else badge.classList.remove('urgent');
 }
 
+/* --- OCR LOGIC (Integrated & Safe) --- */
+function triggerOCR() {
+    if(location.protocol === 'file:') {
+        alert("OCR 기능은 보안상의 이유로\n'file://'(파일 열기)에서는 작동하지 않습니다.\n\n웹 서버(http://localhost)나\nGithub Pages에 올려서 테스트해주세요.");
+        return;
+    }
+    document.getElementById('ocr-input').click();
+}
+
+async function processOCR(input) {
+    const file = input.files[0];
+    input.value = '';
+    if(!file) return;
+
+    const btn = document.getElementById('ocr-btn');
+    const originalText = btn.innerText;
+    
+    try {
+        btn.innerText = "⏳";
+        
+        // Load Image to Canvas for Resizing
+        const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1800;
+                    const scale = Math.min(1, MAX_WIDTH / img.width);
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.9));
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Run Tesseract
+        const { data: { text } } = await Tesseract.recognize(dataUrl, 'eng+kor', {
+            logger: m => { if(m.status==='recognizing text') btn.innerText = Math.round(m.progress*100) + '%'; }
+        });
+
+        // Parse Text
+        if(!text.trim()) throw new Error("No text found");
+        
+        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+        const markers = [
+            { k:'C', r:/^(C|씨)\s*[:\)\]\-\.]/i },
+            { k:'A', r:/^A\s*[:\)\]\-\.]/i },
+            { k:'F', r:/^F\s*[:\)\]\-\.]/i },
+            { k:'PEx', r:/^(PEx|P\/?Ex|PEX|PE)\s*[:\)\]\-\.]/i },
+            { k:'Edu', r:/^(Edu|Education|교육)\s*[:\)\]\-\.]/i },
+            { k:'Memo', r:/^(Memo|메모|암기|Tip|TIPS?)\s*[:\)\]\-\.]/i }
+        ];
+
+        let currentSection = null;
+        let parsed = { C:[], A:[], F:[], PEx:[], Edu:[], Memo:[] };
+        
+        lines.forEach(line => {
+            const match = markers.find(m => m.r.test(line));
+            if(match) {
+                currentSection = match.k;
+                const content = line.replace(match.r, '').trim();
+                if(content) parsed[currentSection].push(content);
+            } else {
+                if(currentSection) parsed[currentSection].push(line);
+                else parsed.Memo.push(line); // Default to Memo
+            }
+        });
+
+        // Apply to UserData
+        if(!userData[editTargetId]) userData[editTargetId] = {};
+        let changed = false;
+        ALL_FIELDS.forEach(field => {
+            if(parsed[field] && parsed[field].length > 0) {
+                const k = parsed[field][0];
+                const v = parsed[field].slice(1).join('\n');
+                userData[editTargetId][field+'_k'] = `<div>${escapeHtml(k)}</div>`;
+                userData[editTargetId][field+'_v'] = `<div style="white-space:pre-wrap;">${escapeHtml(v)}</div>`;
+                changed = true;
+            }
+        });
+        
+        if(!changed && text.length > 0) {
+             // If parse failed but text exists, dump all to Memo
+             userData[editTargetId]['Memo_k'] = `<div>OCR Raw</div>`;
+             userData[editTargetId]['Memo_v'] = `<div style="white-space:pre-wrap;">${escapeHtml(text)}</div>`;
+        }
+
+        saveUserData();
+        renderBack(cards.find(c => c.id === editTargetId), 'manager-preview-form');
+        showToast("OCR 입력 완료!");
+
+    } catch(e) {
+        console.error(e);
+        alert("텍스트 인식 실패. 사진을 더 선명하게 찍어주세요.");
+    } finally {
+        btn.innerText = originalText;
+    }
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
 init();
-</script>
-</body>
-
+  </script>
+ </body>
 </html>
-
-
