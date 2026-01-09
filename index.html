@@ -817,7 +817,6 @@
                 
                 <div class="onboarding-slide">
                     <div class="slide-icon">
-                        <div class="slide-icon">
                         <img src="icon.PNG" style="width:6rem; height:6rem; border-radius:1.2rem; box-shadow:0 8px 16px -4px rgba(0,0,0,0.15);">
                     </div>
                     <div class="slide-title">시간과 장소를<br>가리지 않는 1분 훈련</div>
@@ -889,6 +888,52 @@
                     </div>
                 </div>
 
+                <div class="onboarding-slide">
+                    <div class="slide-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:5rem; height:5rem;">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                            <path d="M12 14v-4m0 0l-2 2m2-2l2 2" stroke="#2563eb"></path> 
+                        </svg>
+                    </div>
+                    <div class="slide-title">앱처럼 설치하세요</div>
+                    <div class="slide-desc">
+                        매번 주소를 입력할 필요 없이<br>
+                        <b>'홈 화면에 추가'</b>를 해보세요.<br>
+                        진짜 어플처럼 아이콘이 생깁니다!
+                        <div class="tip-box" style="text-align:left; font-size:0.85rem;">
+                            🍎 <b>iOS(Safari):</b><br>
+                            하단 공유 버튼(네모+화살표) → <b>'홈 화면에 추가'</b><br><br>
+                            🤖 <b>Android(Chrome):</b><br>
+                            상단 메뉴(점 3개) → <b>'홈 화면에 추가'</b> (또는 앱 설치)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="onboarding-slide">
+                    <div class="slide-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:5rem; height:5rem;">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                    </div>
+                    <div class="slide-title">데이터 백업 & 주의사항</div>
+                    <div class="slide-desc">
+                        목록 탭 하단의 <b>[내보내기/가져오기]</b>를 통해<br>
+                        아이폰↔아이패드↔PC 간 데이터를<br>
+                        자유롭게 이동할 수 있습니다.
+                        
+                        <div class="warn-box" style="text-align:center; font-size:0.9rem;">
+                            🚨 <b>매우 중요!</b><br>
+                            이 앱은 서버가 없습니다.<br>
+                            <b>'인터넷 사용 기록(캐시) 삭제'</b>를 하면<br>
+                            작성한 내용이 모두 사라집니다.<br>
+                            <b>꼭! 수시로 백업 코드를 복사해두세요.</b>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             
             <div class="onboarding-nav">
@@ -897,12 +942,13 @@
                     <div class="dot"></div>
                     <div class="dot"></div>
                     <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
                 </div>
                 <button class="btn" style="width:auto; padding:0.8rem 1.5rem;" id="onboard-next-btn" onclick="nextSlide()">다음</button>
             </div>
         </div>
     </div>
-</div>
 
 <script>
 // --- DATA & LOGIC ---
@@ -1158,11 +1204,22 @@ function nextSlide() {
     }
 }
 function updateDotsOnly() {
+    // 1. 현재 슬라이드가 총 몇 장인지 직접 센다
+    const slides = document.querySelectorAll('.onboarding-slide');
     const dots = document.querySelectorAll('.dot');
+    
+    // 점(dot) 활성화
     dots.forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+    
     const btn = document.getElementById('onboard-next-btn');
-    // ✅ 슬라이드가 5장이 되었으므로, 마지막 인덱스인 4로 수정했습니다.
-    btn.innerText = currentSlide === 4 ? "1분 CPX 시작하기" : "다음";
+    
+    // 2. 숫자를 지정하지 않고 "마지막 장인가?"를 검사한다
+    // (전체 개수 - 1 이 마지막 페이지 번호입니다)
+    if (currentSlide === slides.length - 1) {
+        btn.innerText = "1분 CPX 시작하기";
+    } else {
+        btn.innerText = "다음";
+    }
 }
 
 // EDIT HELP
@@ -1540,6 +1597,7 @@ init();
 </script>
 </body>
 </html>
+
 
 
 
