@@ -459,6 +459,12 @@
             .btn { padding: 0.7rem; font-size: 1rem; border-radius: 10px; }
             .list-item { padding: 0.6rem 0.5rem; min-height: 48px; }
             .category-header { padding: 0.8rem; }
+            }
+            /* ✏️ 작성된 내용이 있을 때 연필 색상 변경 (파란색) */
+            .icon-action-btn.filled { 
+                background: #eff6ff; 
+                color: #2563eb; 
+                border-color: #bfdbfe; 
         }
     </style>
 </head>
@@ -867,6 +873,7 @@ const HYBRID_SKILLS = {
 };
 
 // 증례 생성기 (소아과 표현 개선 버전)
+// 증례 생성기 ("환아" 표현 삭제 버전)
 function generateCase(card) {
     let title = card.title;
     let isMale = Math.random() > 0.5;
@@ -876,7 +883,7 @@ function generateCase(card) {
     let vitals = getNormalVitals();
     let instructions = ["증상과 관련된 병력을 청취하고,", "적절한 신체진찰을 시행한 후,", "추정진단과 향후 계획을 환자와 논의하시오."];
     
-    // 소아 여부 플래그 (true면 문장 구조가 바뀜)
+    // 소아 여부 플래그
     let isChild = false; 
 
     switch(card.id) {
@@ -932,7 +939,7 @@ function generateCase(card) {
         case 42: // 성장 지연
             isChild = true; 
             isMale = false; 
-            age = 5; // 숫자만 입력
+            age = 5; 
             name = "김민지"; 
             scenario = "키가 작다며 보호자와 함께 내원하였다."; 
             instructions = ["성장과 관련된 병력을 청취하고,", "성장곡선을 참고하여 추정진단과 향후 계획을 논의하시오."]; 
@@ -941,7 +948,7 @@ function generateCase(card) {
         case 63: // 발달 지연
             isChild = true; 
             isMale = true; 
-            age = "30개월"; // 문자열 입력 가능
+            age = "30개월"; 
             name = "이영우"; 
             scenario = "아이 발달이 느린 것 같다며 보호자와 함께 내원하였다."; 
             instructions = ["발달과 관련된 병력을 청취하고,", "성장곡선을 참고하여 추정진단과 향후 계획을 논의하시오."]; 
@@ -951,7 +958,7 @@ function generateCase(card) {
             isChild = true; 
             isMale = false;
             let baby = getRandomItem([{a:"7개월", n:"김민주"}, {a:"18개월", n:"윤서희"}]);
-            age = baby.a; // 개월 수
+            age = baby.a; 
             name = baby.n; 
             scenario = "예방접종 상담을 위해 보호자와 함께 내원하였다."; 
             instructions = ["예방 접종 수첩을 확인하고, 필요한 병력을 청취하고,", "환자에게 필요한 예방접종을 상담하고,", "예방 수첩에 금일 접종 항목에 날짜와 병원을 기입하시오."]; 
@@ -966,16 +973,17 @@ function generateCase(card) {
         case 48: scenario = getRandomItem(["죽고 싶다는 생각이 든다며 내원하였다.", "자살을 시도해서 내원하였다."]); break;
     }
 
-    // --- 문장 조립 로직 (소아 vs 성인 분기 처리) ---
+    // --- 문장 조립 로직 ("환아" 삭제 버전) ---
     let subject = "";
     
     if (isChild) {
-        // 소아인 경우: 나이(개월) + 성별(남아/여아) + 이름 + 환아가
-        let ageStr = (typeof age === 'number') ? age + "세" : age; // 숫자는 '세', 문자(개월)은 그대로
+        // 소아: 나이(개월/살) + 성별(남아/여아) + 이름 + 가 ("환아" 삭제)
+        let ageStr = (typeof age === 'number') ? age + "세" : age; 
         let genderStr = isMale ? "남아" : "여아";
-        subject = `${ageStr} ${genderStr} ${name} 환아가`;
+        // 변경: "환아가" -> "가"
+        subject = `${ageStr} ${genderStr} ${name}가`;
     } else {
-        // 성인인 경우: 나이(세) + 성별(남자/여자) + 이름 + 씨가
+        // 성인: 나이(세) + 성별(남자/여자) + 이름 + 씨가
         subject = `${age}세 ${isMale?'남자':'여자'} ${name}씨가`;
     }
 
@@ -986,7 +994,6 @@ function generateCase(card) {
         instructions: instructions 
     };
     
-    // 술기(Hybrid) 지침 추가
     if (HYBRID_SKILLS[card.id]) { 
         caseData.instructions.splice(2, 0, `<span class="hybrid-skill">${getRandomItem(HYBRID_SKILLS[card.id])}</span>`); 
     }
@@ -1156,13 +1163,38 @@ function switchMode(mode) {
         if(mode === 'mock-setup') { document.getElementById('mock-setup-view').classList.add('active'); renderMockTree(); } else if(mode === 'mock-result') { document.getElementById('mock-result-view').classList.add('active'); } stopTimer();
     }
 }
+// 목록 화면 그리기 (파란 연필 기능 추가됨)
 function renderManager() {
-    const list = document.getElementById('list-container'); list.innerHTML = ''; const groups = {}; cards.forEach(c => { if(!groups[c.cat]) groups[c.cat] = []; groups[c.cat].push(c); });
-    const allVisible = cards.every(c => c.isVisible); const toggleBtn = document.getElementById('btn-toggle-all'); toggleBtn.innerHTML = allVisible ? '❎ 전체 해제' : '☑️ 전체 선택'; toggleBtn.onclick = () => toggleAllCards(!allVisible);
+    const list = document.getElementById('list-container'); 
+    list.innerHTML = ''; 
+    const groups = {}; 
+    cards.forEach(c => { if(!groups[c.cat]) groups[c.cat] = []; groups[c.cat].push(c); });
+    
+    const allVisible = cards.every(c => c.isVisible); 
+    const toggleBtn = document.getElementById('btn-toggle-all'); 
+    toggleBtn.innerHTML = allVisible ? '❎ 전체 해제' : '☑️ 전체 선택'; 
+    toggleBtn.onclick = () => toggleAllCards(!allVisible);
+    
     for(const [cat, items] of Object.entries(groups)) {
-        const allHidden = items.every(c => !c.isVisible); const catDiv = document.createElement('div'); catDiv.className = 'category-section'; items.sort((a,b) => parseInt(a.title.match(/^\d+/)?.[0]||0) - parseInt(b.title.match(/^\d+/)?.[0]||0));
+        const allHidden = items.every(c => !c.isVisible); 
+        const catDiv = document.createElement('div'); 
+        catDiv.className = 'category-section'; 
+        items.sort((a,b) => parseInt(a.title.match(/^\d+/)?.[0]||0) - parseInt(b.title.match(/^\d+/)?.[0]||0));
+        
         const isCollapsed = collapsedCategories[cat];
-        catDiv.innerHTML = `<div class="category-header" onclick="toggleCatCollapse('${cat}')"><span>${cat} (${items.length}) ${isCollapsed?'▼':'▲'}</span><button class="icon-action-btn ${!allHidden?'active':''}" onclick="event.stopPropagation(); toggleCategory('${cat}')">${!allHidden ? '<svg style="width:1.2rem; height:1.2rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' : '<svg style="width:1.2rem; height:1.2rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>'}</button></div><div class="category-list ${isCollapsed ? 'collapsed' : ''}">${items.map(c => { const u = userData[c.id] || {}; const total = (u.o||0) + (u.x||0); let badgeClass = 'score-gray'; if(total > 0) { const rate = (u.o||0) / total; if(rate >= 0.8) badgeClass = 'score-green'; else if(rate >= 0.5) badgeClass = 'score-yellow'; else badgeClass = 'score-red'; } const badgeText = total > 0 ? total : '-'; return `<div class="list-item ${!c.isVisible ? 'hidden' : ''}"><div class="item-left"><span class="title">${c.title}</span></div><div class="item-right"><span class="score-badge ${badgeClass}">${badgeText}</span><div class="list-actions"><button class="icon-action-btn edit" onclick="openManagerCardPreview(${c.id})"><svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button><button class="icon-action-btn ${c.isVisible?'active':''}" onclick="toggleCard(${c.id})">${c.isVisible ? '<svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>' : '<svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>'}</button></div></div></div>`; }).join('')}</div>`; list.appendChild(catDiv);
+        
+        catDiv.innerHTML = `<div class="category-header" onclick="toggleCatCollapse('${cat}')"><span>${cat} (${items.length}) ${isCollapsed?'▼':'▲'}</span><button class="icon-action-btn ${!allHidden?'active':''}" onclick="event.stopPropagation(); toggleCategory('${cat}')">${!allHidden ? '<svg style="width:1.2rem; height:1.2rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' : '<svg style="width:1.2rem; height:1.2rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>'}</button></div><div class="category-list ${isCollapsed ? 'collapsed' : ''}">${items.map(c => { 
+            
+            // --- ✏️ 파란 연필 판별 로직 ---
+            const u = userData[c.id] || {}; 
+            const hasContent = Object.keys(u).some(k => k.endsWith('_v') && u[k] && u[k].replace(/<[^>]*>/g, '').trim().length > 0);
+            
+            const total = (u.o||0) + (u.x||0); 
+            let badgeClass = 'score-gray'; 
+            if(total > 0) { const rate = (u.o||0) / total; if(rate >= 0.8) badgeClass = 'score-green'; else if(rate >= 0.5) badgeClass = 'score-yellow'; else badgeClass = 'score-red'; } 
+            const badgeText = total > 0 ? total : '-'; 
+            
+            return `<div class="list-item ${!c.isVisible ? 'hidden' : ''}"><div class="item-left"><span class="title">${c.title}</span></div><div class="item-right"><span class="score-badge ${badgeClass}">${badgeText}</span><div class="list-actions"><button class="icon-action-btn edit ${hasContent ? 'filled' : ''}" onclick="openManagerCardPreview(${c.id})"><svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button><button class="icon-action-btn ${c.isVisible?'active':''}" onclick="toggleCard(${c.id})">${c.isVisible ? '<svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>' : '<svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>'}</button></div></div></div>`; }).join('')}</div>`; list.appendChild(catDiv);
     }
 }
 function toggleCatCollapse(cat) { collapsedCategories[cat] = !collapsedCategories[cat]; saveCats(); renderManager(); }
@@ -1424,6 +1456,7 @@ init();
 </script>
 </body>
 </html>
+
 
 
 
