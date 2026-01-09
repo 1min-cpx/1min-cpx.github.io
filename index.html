@@ -572,33 +572,38 @@
         </div>
         <div class="list-container" id="list-container"></div>      
 
-<div class="controls" style="background:#f1f5f9; display:block;">
-            <div style="padding:1rem; border-top:1px solid #e2e8f0; margin-top:1rem;">
-                <h4 style="margin-bottom:0.5rem; color:#475569; font-size:0.9rem;">💾 데이터 백업/복원</h4>
+<div class="controls" style="background:white; display:block; padding:0; border-top:1px solid #e2e8f0;">
+            <details style="width:100%;">
+                <summary style="padding:1rem; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#475569; background:#f8fafc;">
+                    <span>⚙️ 데이터 관리 / 백업 설정</span>
+                    <span style="font-size:0.8rem; color:#94a3b8;">▼</span>
+                </summary>
                 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem; margin-bottom:1rem;">
-                    <button class="btn btn-blue-outline" onclick="exportDataToClipboard()">
-                        📤 내보내기 (복사)
-                    </button>
-                    <button class="btn btn-blue-outline" onclick="importDataFromClipboard()">
-                        📥 가져오기 (붙여넣기)
-                    </button>
-                </div>
-                
-                <details>
-                    <summary style="cursor:pointer; color:#94a3b8; font-size:0.8rem; margin-bottom:0.5rem; text-align:right;">직접 코드 입력하여 복원하기 ▼</summary>
-                    <textarea id="import-text-area" class="rich-editor" style="min-height:80px; font-size:0.8rem; width:100%;" placeholder="여기에 백업 코드를 붙여넣고 아래 버튼을 누르세요."></textarea>
-                    <button class="btn" style="margin-top:0.5rem; padding:0.5rem; font-size:0.9rem; width:100%;" onclick="importFromTextArea()">
-                        텍스트로 복원하기
-                    </button>
-                </details>
+                <div style="padding:1rem; background:white; border-top:1px solid #f1f5f9;">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem; margin-bottom:1rem;">
+                        <button class="btn btn-blue-outline" onclick="exportDataToClipboard()" style="font-size:0.9rem; padding:0.8rem;">
+                            📤 복사 (내보내기)
+                        </button>
+                        <button class="btn btn-blue-outline" onclick="importDataFromClipboard()" style="font-size:0.9rem; padding:0.8rem;">
+                            📥 붙여넣기 (가져오기)
+                        </button>
+                    </div>
+                    
+                    <details>
+                        <summary style="cursor:pointer; color:#94a3b8; font-size:0.8rem; margin-bottom:0.5rem; text-align:right;">수동 입력창 열기 ▼</summary>
+                        <textarea id="import-text-area" class="rich-editor" style="min-height:80px; font-size:0.8rem; width:100%;" placeholder="여기에 백업 코드를 붙여넣으세요."></textarea>
+                        <button class="btn" style="margin-top:0.5rem; padding:0.6rem; font-size:0.9rem; width:100%;" onclick="importFromTextArea()">
+                            텍스트로 복원하기
+                        </button>
+                    </details>
 
-                <div style="margin-top:1.5rem; border-top:1px solid #e2e8f0; padding-top:1rem;">
-                    <button class="btn btn-reset-outline" style="width:100%;" onclick="resetData()">
-                        🗑️ 데이터 초기화
-                    </button>
+                    <div style="margin-top:1.5rem; border-top:1px solid #f1f5f9; padding-top:1rem;">
+                        <button class="btn btn-reset-outline" style="width:100%; padding:0.8rem;" onclick="resetData()">
+                            🗑️ 데이터 초기화
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </details>
         </div>
     
     <div class="modal-overlay" id="input-modal">
@@ -1346,5 +1351,6 @@ init();
 </script>
 </body>
 </html>
+
 
 
