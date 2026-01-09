@@ -12,7 +12,7 @@
     <meta property="og:title" content="1분 CPX - 실기시험 순발력 훈련">
     <meta property="og:description" content="C.C를 보고 1분 안에 연상하는 실전 감각 연습. 제작: KNU FM JSW">
 
-    <title>1분 CPX v1.2 </title>
+    <title>1분 CPX v1.2</title>
     
     <script src='https://unpkg.com/tesseract.js@5.1.0/dist/tesseract.min.js'></script>
     
@@ -606,7 +606,7 @@
         </div>
         <div class="list-container" id="list-container"></div>      
 
-<div class="controls" style="background:white; display:block; padding:0; border-top:1px solid #e2e8f0;">
+        <div class="controls" style="background:white; display:block; padding:0; border-top:1px solid #e2e8f0;">
             <details style="width:100%;">
                 <summary style="padding:1rem; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#475569; background:#f8fafc;">
                     <span>⚙️ 데이터 관리 / 백업 설정</span>
@@ -639,7 +639,100 @@
                 </div>
             </details>
         </div>
+    </div>
     
+    <div class="modal-overlay" id="input-modal">
+        <div class="modal-content">
+            <div style="padding:1rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:700;">내용 편집</span>
+                <button onclick="closeModal()" style="font-size:1.5rem; background:none; border:none;">&times;</button>
+            </div>
+            <div class="editor-toolbar">
+                <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('bold')">B</button>
+                <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('italic')"><i>I</i></button>
+                <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('underline')"><u>U</u></button>
+                <div style="width:1px; background:#cbd5e1; margin:0 5px;"></div>
+                <button class="color-btn black" onmousedown="event.preventDefault(); execColor('#334155')"></button>
+                <button class="color-btn red" onmousedown="event.preventDefault(); execColor('#ef4444')"></button>
+                <button class="color-btn blue" onmousedown="event.preventDefault(); execColor('#2563eb')"></button>
+            </div>
+            <div style="padding:0 1.5rem 1.5rem; flex:1; display:flex; flex-direction:column; overflow:hidden;">
+                <div class="input-group">
+                    <label style="font-size:0.85rem; font-weight:700; color:#64748b; display:block; margin-bottom:0.5rem;">🔑 키워드 / 암기법</label>
+                    <div id="modal-editor-key" class="rich-editor" contenteditable="true" placeholder="내용을 입력하세요..."></div>
+                </div>
+                <div class="input-group" style="flex:1; display:flex; flex-direction:column; overflow:hidden; margin-top:1rem;">
+                    <label style="font-size:0.85rem; font-weight:700; color:#64748b; display:block; margin-bottom:0.5rem;">📝 상세 해설</label>
+                    <div id="modal-editor-val" class="rich-editor detail" contenteditable="true" placeholder="상세 해설을 입력하세요..."></div>
+                </div>
+            </div>
+            <input type="hidden" id="modal-field-key">
+            <div style="padding:1rem; border-top:1px solid #e2e8f0;">
+                <button class="btn" onclick="saveFieldData()">저장 완료</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="manager-preview-modal">
+        <div class="modal-content" style="position:relative;">
+            <div id="edit-help-overlay" onclick="closeEditHelp()">
+                <div style="margin-top:4rem; text-align:left;">
+                    <div class="edit-help-arrow">⬆️</div>
+                    <div class="edit-help-text">
+                        카드 뒷면에 포함될 항목을<br>선택할 수 있습니다.
+                    </div>
+                    <div class="edit-help-arrow" style="margin-top:2rem;">⬇️</div>
+                    <div class="edit-help-text">
+                        각 항목을 눌러<br>나만의 암기법과 해설을<br>작성하세요.
+                    </div>
+                    <div style="margin-top:auto; text-align:center; color:#cbd5e1; font-weight:400; font-size:0.9rem;">
+                        (화면을 터치하면 닫힙니다)
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding:1rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span style="font-weight:700;" id="manager-preview-title">카드 편집</span>
+                    <button id="ocr-btn" class="icon-btn" style="width:28px; height:28px;" onclick="triggerOCR()" title="OCR 자동입력">
+                        <svg style="width:1.2rem; height:1.2rem;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                    </button>
+                    <input type="file" id="ocr-input" accept="image/*" capture="environment" style="display:none" onchange="processOCR(this)">
+                    <button class="icon-btn delete" style="width:28px; height:28px;" onclick="deleteCardData(editTargetId)">
+                        <svg style="width:1.2rem; height:1.2rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+                <button onclick="document.getElementById('manager-preview-modal').classList.remove('open')" style="font-size:1.5rem; background:none; border:none;">&times;</button>
+            </div>
+            <div class="chip-container" id="preview-chips">
+                <div class="field-chip active" onclick="toggleField(this, 'C')">C</div>
+                <div class="field-chip active" onclick="toggleField(this, 'A')">A</div>
+                <div class="field-chip active" onclick="toggleField(this, 'F')">F</div>
+                <div class="field-chip active" onclick="toggleField(this, 'PEx')">PEx</div>
+                <div class="field-chip active" onclick="toggleField(this, 'Edu')">Edu</div>
+                <div class="field-chip active" onclick="toggleField(this, 'Memo')">Memo</div>
+            </div>
+            <div class="cpx-form" id="manager-preview-form" style="padding:1.5rem;"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="timer-modal">
+        <div class="modal-content" style="height:auto; min-height:30%;">
+            <div style="padding:1rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:700;">타이머 설정</span>
+                <button onclick="closeTimerModal()" style="background:none; border:none; font-size:1.5rem;">&times;</button>
+            </div>
+            <div style="padding:1.5rem;">
+                <button class="timer-option-btn" onclick="setTimerOption('1min')">1분 연습 <span style="font-weight:400; color:#64748b;">60초</span></button>
+                <button class="timer-option-btn" onclick="setTimerOption('unlimited')">무제한 <span style="font-weight:400; color:#64748b;">&infin;</span></button>
+                <button class="timer-option-btn" onclick="setTimerOption('custom')">직접 입력</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="onboarding-modal">
         <div class="modal-content" style="background:white; position:relative;">
             <button class="onboarding-close" onclick="closeOnboarding()">&times;</button>
@@ -651,9 +744,9 @@
             </div>
         </div>
     </div>
-        
+</div>
+
 <script>
-// --- DATA & LOGIC ---
 // --- DATA & LOGIC ---
 
 // 1. 도움말 데이터 (새로 추가한 것)
@@ -1009,7 +1102,6 @@ function updateDotsOnly() {
     }
 }
 
-
 // EDIT HELP
 function checkEditHelp() {
     if(!localStorage.getItem('cpx_edit_help_seen')) { document.getElementById('edit-help-overlay').style.display = 'flex'; }
@@ -1092,7 +1184,7 @@ function switchMode(mode) {
         if(mode === 'mock-setup') { document.getElementById('mock-setup-view').classList.add('active'); renderMockTree(); } else if(mode === 'mock-result') { document.getElementById('mock-result-view').classList.add('active'); } stopTimer();
     }
 }
-// 목록 화면 그리기 (파란 연필 기능 추가됨)
+/* ▼▼▼ 파란 연필 기능이 복구된 목록 렌더링 함수 ▼▼▼ */
 function renderManager() {
     const list = document.getElementById('list-container'); 
     list.innerHTML = ''; 
@@ -1114,7 +1206,7 @@ function renderManager() {
         
         catDiv.innerHTML = `<div class="category-header" onclick="toggleCatCollapse('${cat}')"><span>${cat} (${items.length}) ${isCollapsed?'▼':'▲'}</span><button class="icon-action-btn ${!allHidden?'active':''}" onclick="event.stopPropagation(); toggleCategory('${cat}')">${!allHidden ? '<svg style="width:1.2rem; height:1.2rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' : '<svg style="width:1.2rem; height:1.2rem" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>'}</button></div><div class="category-list ${isCollapsed ? 'collapsed' : ''}">${items.map(c => { 
             
-            // --- ✏️ 파란 연필 판별 로직 ---
+            // ✏️ [복구됨] 내용이 있는지 확인하는 로직
             const u = userData[c.id] || {}; 
             const hasContent = Object.keys(u).some(k => k.endsWith('_v') && u[k] && u[k].replace(/<[^>]*>/g, '').trim().length > 0);
             
@@ -1123,6 +1215,7 @@ function renderManager() {
             if(total > 0) { const rate = (u.o||0) / total; if(rate >= 0.8) badgeClass = 'score-green'; else if(rate >= 0.5) badgeClass = 'score-yellow'; else badgeClass = 'score-red'; } 
             const badgeText = total > 0 ? total : '-'; 
             
+            // ✏️ 버튼 클래스에 ${hasContent ? 'filled' : ''} 추가됨
             return `<div class="list-item ${!c.isVisible ? 'hidden' : ''}"><div class="item-left"><span class="title">${c.title}</span></div><div class="item-right"><span class="score-badge ${badgeClass}">${badgeText}</span><div class="list-actions"><button class="icon-action-btn edit ${hasContent ? 'filled' : ''}" onclick="openManagerCardPreview(${c.id})"><svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button><button class="icon-action-btn ${c.isVisible?'active':''}" onclick="toggleCard(${c.id})">${c.isVisible ? '<svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>' : '<svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>'}</button></div></div></div>`; }).join('')}</div>`; list.appendChild(catDiv);
     }
 }
@@ -1171,7 +1264,25 @@ function openModal(code) { const isManager = document.getElementById('manager-pr
 function closeModal() { document.getElementById('input-modal').classList.remove('open'); }
 function execCmd(cmd) { document.execCommand(cmd, false, null); }
 function execColor(color) { document.execCommand('foreColor', false, color); }
-function saveFieldData() { const code = document.getElementById('modal-field-key').value; if(!userData[editTargetId]) userData[editTargetId] = {}; userData[editTargetId][code+'_k'] = document.getElementById('modal-editor-key').innerHTML; userData[editTargetId][code+'_v'] = document.getElementById('modal-editor-val').innerHTML; saveUserData(); if(document.getElementById('manager-preview-modal').classList.contains('open')) renderBack(cards.find(c => c.id === editTargetId), 'manager-preview-form'); if(document.getElementById('study-view').classList.contains('active') && studyDeck[currentIndex] && studyDeck[currentIndex].id === editTargetId) renderBack(studyDeck[currentIndex], 'card-back-form'); closeModal(); showToast("저장되었습니다."); }
+function saveFieldData() { 
+    const code = document.getElementById('modal-field-key').value; 
+    if(!userData[editTargetId]) userData[editTargetId] = {}; 
+    userData[editTargetId][code+'_k'] = document.getElementById('modal-editor-key').innerHTML; 
+    userData[editTargetId][code+'_v'] = document.getElementById('modal-editor-val').innerHTML; 
+    
+    saveUserData(); 
+    
+    // 카드 미리보기 갱신
+    if(document.getElementById('manager-preview-modal').classList.contains('open')) renderBack(cards.find(c => c.id === editTargetId), 'manager-preview-form'); 
+    // 학습 모드 갱신
+    if(document.getElementById('study-view').classList.contains('active') && studyDeck[currentIndex] && studyDeck[currentIndex].id === editTargetId) renderBack(studyDeck[currentIndex], 'card-back-form'); 
+    
+    // ✅ [추가됨] 목록 화면도 즉시 갱신 (파란 연필 바로 반영)
+    if(document.getElementById('manager-view').classList.contains('active')) renderManager();
+
+    closeModal(); 
+    showToast("저장되었습니다."); 
+}
 // --- 데이터 내보내기/가져오기 (클립보드 방식) ---
 
 // 1. 내보내기 (복사하기)
@@ -1253,7 +1364,7 @@ function setTimerOption(mode) { if(mode==='1min') { timerTime=60; isInfinite=fal
 function startTimer() { 
     stopTimer(); 
     if(!isInfinite) timeLeft=timerTime; 
-    updateTimerUI(); 
+    updateTimerUI; 
     timerInterval = setInterval(() => { 
         if(isInfinite) return; 
         timeLeft--; 
@@ -1385,15 +1496,3 @@ init();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
