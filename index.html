@@ -538,15 +538,34 @@
         </div>
         <div class="list-container" id="list-container"></div>      
 
-        <div class="controls" style="background:#f1f5f9; display:block;">
-            <div class="manager-controls">
-                <button class="btn btn-blue-outline" onclick="exportData()">내보내기</button>
-                <button class="btn btn-blue-outline" onclick="document.getElementById('import-file').click()">가져오기</button>
-                <button class="btn btn-reset-outline" onclick="resetData()">초기화</button>
-                <input type="file" id="import-file" style="display:none" onchange="importData(this)">
+<div class="controls" style="background:#f1f5f9; display:block;">
+            <div style="padding:1rem; border-top:1px solid #e2e8f0; margin-top:1rem;">
+                <h4 style="margin-bottom:0.5rem; color:#475569; font-size:0.9rem;">💾 데이터 백업/복원</h4>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem; margin-bottom:1rem;">
+                    <button class="btn btn-blue-outline" onclick="exportDataToClipboard()">
+                        📤 내보내기 (복사)
+                    </button>
+                    <button class="btn btn-blue-outline" onclick="importDataFromClipboard()">
+                        📥 가져오기 (붙여넣기)
+                    </button>
+                </div>
+                
+                <details>
+                    <summary style="cursor:pointer; color:#94a3b8; font-size:0.8rem; margin-bottom:0.5rem; text-align:right;">직접 코드 입력하여 복원하기 ▼</summary>
+                    <textarea id="import-text-area" class="rich-editor" style="min-height:80px; font-size:0.8rem; width:100%;" placeholder="여기에 백업 코드를 붙여넣고 아래 버튼을 누르세요."></textarea>
+                    <button class="btn" style="margin-top:0.5rem; padding:0.5rem; font-size:0.9rem; width:100%;" onclick="importFromTextArea()">
+                        텍스트로 복원하기
+                    </button>
+                </details>
+
+                <div style="margin-top:1.5rem; border-top:1px solid #e2e8f0; padding-top:1rem;">
+                    <button class="btn btn-reset-outline" style="width:100%;" onclick="resetData()">
+                        🗑️ 데이터 초기화
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
     
     <div class="modal-overlay" id="input-modal">
         <div class="modal-content">
@@ -1080,8 +1099,80 @@ function closeModal() { document.getElementById('input-modal').classList.remove(
 function execCmd(cmd) { document.execCommand(cmd, false, null); }
 function execColor(color) { document.execCommand('foreColor', false, color); }
 function saveFieldData() { const code = document.getElementById('modal-field-key').value; if(!userData[editTargetId]) userData[editTargetId] = {}; userData[editTargetId][code+'_k'] = document.getElementById('modal-editor-key').innerHTML; userData[editTargetId][code+'_v'] = document.getElementById('modal-editor-val').innerHTML; saveUserData(); if(document.getElementById('manager-preview-modal').classList.contains('open')) renderBack(cards.find(c => c.id === editTargetId), 'manager-preview-form'); if(document.getElementById('study-view').classList.contains('active') && studyDeck[currentIndex] && studyDeck[currentIndex].id === editTargetId) renderBack(studyDeck[currentIndex], 'card-back-form'); closeModal(); showToast("저장되었습니다."); }
-function exportData() { const data = { cards: localStorage.getItem('cpx_v37_cards'), userData: localStorage.getItem('cpx_v37_userdata'), cats: localStorage.getItem('cpx_v37_cats') }; const blob = new Blob([JSON.stringify(data)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `cpx_data_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
-function importData(input) { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const data = JSON.parse(e.target.result); if(data.cards) localStorage.setItem('cpx_v37_cards', data.cards); if(data.userData) localStorage.setItem('cpx_v37_userdata', data.userData); if(data.cats) localStorage.setItem('cpx_v37_cats', data.cats); alert("완료되었습니다."); location.reload(); } catch(err) { alert("파일 오류"); } }; reader.readAsText(file); }
+// --- 데이터 내보내기/가져오기 (클립보드 방식) ---
+
+// 1. 내보내기 (복사하기)
+async function exportDataToClipboard() {
+    const backupData = {
+        cards: cards,
+        userData: userData,
+        cats: collapsedCategories,
+        date: new Date().toLocaleString()
+    };
+
+    const jsonString = JSON.stringify(backupData);
+
+    try {
+        await navigator.clipboard.writeText(jsonString);
+        alert("데이터가 클립보드에 복사되었습니다!\n\n카카오톡이나 메모장에 '붙여넣기'하여 보관하세요.");
+    } catch (err) {
+        const textArea = document.getElementById('import-text-area');
+        textArea.value = jsonString;
+        document.querySelector('details').open = true;
+        textArea.select();
+        alert("자동 복사에 실패했습니다.\n아래 텍스트 상자의 내용을 '전체 선택' -> '복사' 하세요.");
+    }
+}
+
+// 2. 가져오기 (붙여넣기 - 자동)
+async function importDataFromClipboard() {
+    try {
+        const text = await navigator.clipboard.readText();
+        if (!text) {
+            alert("클립보드에 복사된 내용이 없습니다.");
+            return;
+        }
+        processDataRestoration(text);
+    } catch (err) {
+        console.error(err);
+        document.querySelector('details').open = true;
+        document.getElementById('import-text-area').focus();
+        alert("클립보드 접근 권한이 없습니다.\n아래 입력창에 백업 코드를 직접 붙여넣고 '텍스트로 복원하기'를 눌러주세요.");
+    }
+}
+
+// 3. 가져오기 (수동 입력창 사용)
+function importFromTextArea() {
+    const text = document.getElementById('import-text-area').value;
+    if (!text.trim()) {
+        alert("백업 코드를 입력해주세요.");
+        return;
+    }
+    processDataRestoration(text);
+}
+
+// 4. 실제 데이터 복원 로직
+function processDataRestoration(jsonString) {
+    try {
+        const data = JSON.parse(jsonString);
+        if (!data.cards || !data.userData) {
+            throw new Error("유효하지 않은 데이터 형식입니다.");
+        }
+        if (confirm(`백업 데이터(${data.date || '날짜 없음'})로 복원하시겠습니까?\n현재 진행 상황은 덮어씌워집니다.`)) {
+            cards = data.cards;
+            userData = data.userData;
+            collapsedCategories = data.cats || {};
+            saveCards();
+            saveUserData();
+            saveCats();
+            alert("✅ 복원이 완료되었습니다.");
+            location.reload();
+        }
+    } catch (e) {
+        console.error(e);
+        alert("데이터 복원에 실패했습니다.\n올바른 백업 코드가 아니거나 형식이 손상되었습니다.");
+    }
+}
 function resetData() { if(confirm("초기화하시겠습니까? (데이터 삭제)")) { localStorage.clear(); location.reload(); } }
 function openTimerModal() { document.getElementById('timer-modal').classList.add('open'); }
 function closeTimerModal() { document.getElementById('timer-modal').classList.remove('open'); }
@@ -1221,3 +1312,4 @@ init();
 </script>
 </body>
 </html>
+
