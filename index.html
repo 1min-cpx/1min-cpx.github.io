@@ -47,6 +47,20 @@
             background-color: white; display: flex; flex-direction: column; position: relative;
         }
 
+        /* ✅ 형광펜 버튼 */
+        .hl-btn{
+        padding: 6px 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #fff;
+        font-weight: 900;
+        font-size: 0.85rem;
+        cursor: pointer;
+        min-width: 36px;
+        line-height: 1;
+        }
+        .hl-btn:active{ transform: scale(0.98); }
+
         /* HEADER */
         header {
             padding: 0 1rem; padding-top: env(safe-area-inset-top);
@@ -659,6 +673,9 @@
                 <button class="color-btn black" onmousedown="event.preventDefault(); execColor('#334155')"></button>
                 <button class="color-btn red" onmousedown="event.preventDefault(); execColor('#ef4444')"></button>
                 <button class="color-btn blue" onmousedown="event.preventDefault(); execColor('#2563eb')"></button>
+                <div style="width:1px; background:#cbd5e1; margin:0 5px;"></div>
+                <button class="hl-btn" onmousedown="event.preventDefault(); toggleHighlight()" title="형광펜"> ✨ </button>
+
             </div>
             <div style="padding:0 1.5rem 1.5rem; flex:1; display:flex; flex-direction:column; overflow:hidden;">
                 <div class="input-group">
@@ -1268,6 +1285,37 @@ function openModal(code) { const isManager = document.getElementById('manager-pr
 function closeModal() { document.getElementById('input-modal').classList.remove('open'); }
 function execCmd(cmd) { document.execCommand(cmd, false, null); }
 function execColor(color) { document.execCommand('foreColor', false, color); }
+// ✅ 형광펜 토글 (노랑): 선택 영역에 형광 ON/OFF
+function toggleHighlight() {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return;
+
+  // 노란 형광 색 (가장 흔한 형광노랑)
+  const YELLOW = '#fff59d';
+
+  // 브라우저마다 hiliteColor/backColor 지원이 달라서 둘 다 시도
+  const cur = (document.queryCommandValue('hiliteColor') || document.queryCommandValue('backColor') || '')
+    .toString().replace(/\s+/g, '').toLowerCase();
+
+  // 브라우저가 rgb(...)로 반환하는 경우도 있어서 같이 비교
+  const isYellow =
+    cur === YELLOW ||
+    cur === 'yellow' ||
+    cur === '#ffff00' ||
+    cur === 'rgb(255,255,0)' ||
+    cur === 'rgb(255,245,157)';
+
+  if (isYellow) {
+    // 형광 제거: 흰색으로 되돌리기 (가장 안전/확실)
+    document.execCommand('hiliteColor', false, '#ffffff');
+    document.execCommand('backColor', false, '#ffffff');
+  } else {
+    // 형광 적용
+    document.execCommand('hiliteColor', false, YELLOW);
+    document.execCommand('backColor', false, YELLOW);
+  }
+}
+
 function saveFieldData() { 
     const code = document.getElementById('modal-field-key').value; 
     if(!userData[editTargetId]) userData[editTargetId] = {}; 
@@ -1500,4 +1548,3 @@ init();
 </script>
 </body>
 </html>
-
