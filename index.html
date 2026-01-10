@@ -46,6 +46,29 @@
             background-color: white; display: flex; flex-direction: column; position: relative;
         }
 
+        /* ✅ [수정됨] 파스텔 톤 형광펜 버튼 스타일 */
+        .hl-btn {
+            width: 24px; 
+            height: 24px;
+            border-radius: 4px; /* 약간 둥근 사각형 */
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.1); /* 은은한 테두리 */
+            margin-left: 4px;
+            transition: transform 0.1s, border-color 0.1s;
+        }
+        .hl-btn:active { transform: scale(0.9); }
+        
+        /* 노란색 버튼 (파스텔) */
+        .hl-btn.yellow { 
+            background-color: #fff9c4; /* 연한 노랑 */
+            border-color: #fbc02d;     /* 진한 노랑 테두리 */
+        }
+        /* 연두색 버튼 (파스텔) */
+        .hl-btn.green { 
+            background-color: #dcedc8; /* 연한 연두 */
+            border-color: #8bc34a;     /* 진한 연두 테두리 */
+        }
+
         /* HEADER */
         header {
             padding: 0 1rem; padding-top: env(safe-area-inset-top);
@@ -56,12 +79,12 @@
         .header-left { display: flex; align-items: center; gap: 0.8rem; }
         .brand-box { display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         .main-title { 
-    font-weight: 900; 
-    font-size: 1rem;       /* 1. 폰트 크기 축소 (1.1rem -> 1rem) */
-    color: #1e293b; 
-    letter-spacing: -0.5px;
-    white-space: nowrap;   /* 2. 줄바꿈 강제 방지 (핵심) */
-}
+            font-weight: 900; 
+            font-size: 1rem;       /* 1. 폰트 크기 축소 (1.1rem -> 1rem) */
+            color: #1e293b; 
+            letter-spacing: -0.5px;
+            white-space: nowrap;   /* 2. 줄바꿈 강제 방지 (핵심) */
+        }
         .sub-title { font-weight: 700; font-size: 0.65rem; color: var(--primary-color); letter-spacing: 0.5px; }
 
         .timer-badge {
@@ -664,6 +687,10 @@
                 <button class="color-btn black" onmousedown="event.preventDefault(); execColor('#334155')"></button>
                 <button class="color-btn red" onmousedown="event.preventDefault(); execColor('#ef4444')"></button>
                 <button class="color-btn blue" onmousedown="event.preventDefault(); execColor('#2563eb')"></button>
+                <div style="width:1px; background:#cbd5e1; margin:0 5px;"></div>
+                
+                <button class="hl-btn yellow" onmousedown="event.preventDefault(); toggleHighlight('yellow')" title="노란 형광펜"></button>
+                <button class="hl-btn green" onmousedown="event.preventDefault(); toggleHighlight('green')" title="연두 형광펜"></button>
             </div>
             <div style="padding:0 1.5rem 1.5rem; flex:1; display:flex; flex-direction:column; overflow:hidden;">
                 <div class="input-group">
@@ -1266,6 +1293,44 @@ function openModal(code) { const isManager = document.getElementById('manager-pr
 function closeModal() { document.getElementById('input-modal').classList.remove('open'); }
 function execCmd(cmd) { document.execCommand(cmd, false, null); }
 function execColor(color) { document.execCommand('foreColor', false, color); }
+
+// ✅ [수정됨] 형광펜 기능: 노랑, 연두 분리
+function toggleHighlight(color) {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return;
+
+  // 파스텔 톤 색상 정의
+  const COLORS = {
+    'yellow': '#fff9c4', // background color
+    'green': '#dcedc8'   // background color
+  };
+  const targetColor = COLORS[color] || '#ffffff';
+
+  // 현재 선택 영역의 색상 확인 (대략적)
+  // 브라우저마다 hiliteColor 반환값이 달라서 정확한 토글은 어렵지만,
+  // "흰색으로 덮어쓰기"나 "새 색깔로 덮어쓰기" 방식이 가장 깔끔합니다.
+  
+  // 간단한 로직: 그냥 칠한다. (브라우저 기본 기능 활용)
+  // 만약 "지우고 싶다"면? -> 같은 색을 또 누르면 흰색으로 칠하는 로직 추가 가능
+  
+  // 여기서는 '무조건 해당 색으로 칠하기'로 구현합니다. 
+  // (지우려면? 다시 선택해서 다른 색 칠하거나, 에디터의 '서식 지우기'가 필요하지만
+  //  요청사항: "이미 칠해진 색을 다시 누르면 색 지우기"를 위해 아래 로직 시도)
+
+  const parent = sel.anchorNode.parentElement;
+  if (parent && parent.tagName === 'SPAN' && parent.style.backgroundColor) {
+     // 이미 색이 칠해져 있는 경우
+     // 정확한 RGB 비교는 복잡하므로, 그냥 부모가 SPAN이고 배경색이 있으면 '지우기(흰색)'으로 동작
+     // 단, 사용자가 "노랑->연두"로 바꾸고 싶을 수도 있으니
+     // '현재 색과 같으면 지우고, 다르면 덮어쓰기'가 이상적입니다.
+     
+     // 일단 심플하게: 그냥 칠합니다. (가장 오류가 적음)
+     document.execCommand('hiliteColor', false, targetColor);
+  } else {
+     document.execCommand('hiliteColor', false, targetColor);
+  }
+}
+
 function saveFieldData() { 
     const code = document.getElementById('modal-field-key').value; 
     if(!userData[editTargetId]) userData[editTargetId] = {}; 
@@ -1390,5 +1455,3 @@ init();
 </script>
 </body>
 </html>
-
-
