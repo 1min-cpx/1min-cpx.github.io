@@ -14,7 +14,6 @@
 
     <title>1분 CPX v1.2</title>
     
-    <script src='https://unpkg.com/tesseract.js@5.1.0/dist/tesseract.min.js'></script>
     
     <link rel="apple-touch-icon" href="icon.PNG">
     <link rel="icon" type="image/png" href="icon.PNG">
@@ -56,7 +55,13 @@
         
         .header-left { display: flex; align-items: center; gap: 0.8rem; }
         .brand-box { display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
-        .main-title { font-weight: 900; font-size: 1.1rem; color: #1e293b; letter-spacing: -0.5px; }
+        .main-title { 
+    font-weight: 900; 
+    font-size: 1rem;       /* 1. 폰트 크기 축소 (1.1rem -> 1rem) */
+    color: #1e293b; 
+    letter-spacing: -0.5px;
+    white-space: nowrap;   /* 2. 줄바꿈 강제 방지 (핵심) */
+}
         .sub-title { font-weight: 700; font-size: 0.65rem; color: var(--primary-color); letter-spacing: 0.5px; }
 
         .timer-badge {
@@ -698,13 +703,6 @@
             <div style="padding:1rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:0.5rem;">
                     <span style="font-weight:700;" id="manager-preview-title">카드 편집</span>
-                    <button id="ocr-btn" class="icon-btn" style="width:28px; height:28px;" onclick="triggerOCR()" title="OCR 자동입력">
-                        <svg style="width:1.2rem; height:1.2rem;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                            <circle cx="12" cy="13" r="4"></circle>
-                        </svg>
-                    </button>
-                    <input type="file" id="ocr-input" accept="image/*" capture="environment" style="display:none" onchange="processOCR(this)">
                     <button class="icon-btn delete" style="width:28px; height:28px;" onclick="deleteCardData(editTargetId)">
                         <svg style="width:1.2rem; height:1.2rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
@@ -1387,117 +1385,10 @@ function updateTimerUI() {
     else badge.classList.remove('urgent');
 }
 
-/* --- OCR LOGIC (Integrated & Safe) --- */
-function triggerOCR() {
-    if(location.protocol === 'file:') {
-        alert("OCR 기능은 보안상의 이유로\n'file://'(파일 열기)에서는 작동하지 않습니다.\n\n웹 서버(http://localhost)나\nGithub Pages에 올려서 테스트해주세요.");
-        return;
-    }
-    document.getElementById('ocr-input').click();
-}
-
-async function processOCR(input) {
-    const file = input.files[0];
-    input.value = '';
-    if(!file) return;
-
-    const btn = document.getElementById('ocr-btn');
-    const originalContent = btn.innerHTML; // SVG preservation
-    
-    try {
-        btn.innerHTML = "<span style='font-size:0.8rem;'>⏳</span>";
-        
-        // Load Image to Canvas for Resizing
-        const dataUrl = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 1800;
-                    const scale = Math.min(1, MAX_WIDTH / img.width);
-                    canvas.width = img.width * scale;
-                    canvas.height = img.height * scale;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.9));
-                };
-                img.onerror = reject;
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-
-        // Run Tesseract
-        const { data: { text } } = await Tesseract.recognize(dataUrl, 'eng+kor', {
-            logger: m => { if(m.status==='recognizing text') btn.innerHTML = `<span style='font-size:0.7rem;'>${Math.round(m.progress*100)}%</span>`; }
-        });
-
-        // Parse Text
-        if(!text.trim()) throw new Error("No text found");
-        
-        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-        const markers = [
-            { k:'C', r:/^(C|씨)\s*[:\)\]\-\.]/i },
-            { k:'A', r:/^A\s*[:\)\]\-\.]/i },
-            { k:'F', r:/^F\s*[:\)\]\-\.]/i },
-            { k:'PEx', r:/^(PEx|P\/?Ex|PEX|PE)\s*[:\)\]\-\.]/i },
-            { k:'Edu', r:/^(Edu|Education|교육)\s*[:\)\]\-\.]/i },
-            { k:'Memo', r:/^(Memo|메모|암기|Tip|TIPS?)\s*[:\)\]\-\.]/i }
-        ];
-
-        let currentSection = null;
-        let parsed = { C:[], A:[], F:[], PEx:[], Edu:[], Memo:[] };
-        
-        lines.forEach(line => {
-            const match = markers.find(m => m.r.test(line));
-            if(match) {
-                currentSection = match.k;
-                const content = line.replace(match.r, '').trim();
-                if(content) parsed[currentSection].push(content);
-            } else {
-                if(currentSection) parsed[currentSection].push(line);
-                else parsed.Memo.push(line); // Default to Memo
-            }
-        });
-
-        // Apply to UserData
-        if(!userData[editTargetId]) userData[editTargetId] = {};
-        let changed = false;
-        ALL_FIELDS.forEach(field => {
-            if(parsed[field] && parsed[field].length > 0) {
-                const k = parsed[field][0];
-                const v = parsed[field].slice(1).join('\n');
-                userData[editTargetId][field+'_k'] = `<div>${escapeHtml(k)}</div>`;
-                userData[editTargetId][field+'_v'] = `<div style="white-space:pre-wrap;">${escapeHtml(v)}</div>`;
-                changed = true;
-            }
-        });
-        
-        if(!changed && text.length > 0) {
-             // If parse failed but text exists, dump all to Memo
-             userData[editTargetId]['Memo_k'] = `<div>OCR Raw</div>`;
-             userData[editTargetId]['Memo_v'] = `<div style="white-space:pre-wrap;">${escapeHtml(text)}</div>`;
-        }
-
-        saveUserData();
-        renderBack(cards.find(c => c.id === editTargetId), 'manager-preview-form');
-        showToast("OCR 입력 완료!");
-
-    } catch(e) {
-        console.error(e);
-        alert("텍스트 인식 실패. 사진을 더 선명하게 찍어주세요.");
-    } finally {
-        btn.innerHTML = originalContent;
-    }
-}
-
-function escapeHtml(text) {
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
 
 init();
 </script>
 </body>
 </html>
+
 
