@@ -1294,41 +1294,98 @@ function closeModal() { document.getElementById('input-modal').classList.remove(
 function execCmd(cmd) { document.execCommand(cmd, false, null); }
 function execColor(color) { document.execCommand('foreColor', false, color); }
 
-// ✅ [수정됨] 형광펜 기능: 노랑, 연두 분리
+// ✅ 형광펜 토글 (같은 색이면 제거, 다른 색이면 적용/변경)
 function toggleHighlight(color) {
   const sel = window.getSelection();
   if (!sel || sel.rangeCount === 0) return;
 
-  // 파스텔 톤 색상 정의
+  const range = sel.getRangeAt(0);
+  if (range.collapsed) return;
+
   const COLORS = {
-    'yellow': '#fff9c4', // background color
-    'green': '#dcedc8'   // background color
+    yellow: '#fff9c4',
+    green:  '#dcedc8'
   };
-  const targetColor = COLORS[color] || '#ffffff';
+  const targetColor = COLORS[color] || COLORS.yellow;
 
-  // 현재 선택 영역의 색상 확인 (대략적)
-  // 브라우저마다 hiliteColor 반환값이 달라서 정확한 토글은 어렵지만,
-  // "흰색으로 덮어쓰기"나 "새 색깔로 덮어쓰기" 방식이 가장 깔끔합니다.
-  
-  // 간단한 로직: 그냥 칠한다. (브라우저 기본 기능 활용)
-  // 만약 "지우고 싶다"면? -> 같은 색을 또 누르면 흰색으로 칠하는 로직 추가 가능
-  
-  // 여기서는 '무조건 해당 색으로 칠하기'로 구현합니다. 
-  // (지우려면? 다시 선택해서 다른 색 칠하거나, 에디터의 '서식 지우기'가 필요하지만
-  //  요청사항: "이미 칠해진 색을 다시 누르면 색 지우기"를 위해 아래 로직 시도)
+  // 브라우저별 지원: hiliteColor가 안 되면 backColor 사용 (특히 Safari 대응)
+  const cmd = document.queryCommandSupported && document.queryCommandSupported('hiliteColor')
+    ? 'hiliteColor'
+    : 'backColor';
 
-  const parent = sel.anchorNode.parentElement;
-  if (parent && parent.tagName === 'SPAN' && parent.style.backgroundColor) {
-     // 이미 색이 칠해져 있는 경우
-     // 정확한 RGB 비교는 복잡하므로, 그냥 부모가 SPAN이고 배경색이 있으면 '지우기(흰색)'으로 동작
-     // 단, 사용자가 "노랑->연두"로 바꾸고 싶을 수도 있으니
-     // '현재 색과 같으면 지우고, 다르면 덮어쓰기'가 이상적입니다.
-     
-     // 일단 심플하게: 그냥 칠합니다. (가장 오류가 적음)
-     document.execCommand('hiliteColor', false, targetColor);
+  // 현재 선택영역이 "같은 색 형광펜" 위에 있는지 판단
+  const isSame = selectionHasSameBgColor(sel, targetColor);
+
+  if (isSame) {
+    // ✅ 같은 색이면 "제거" (투명으로 칠한 뒤, 불필요 span 정리)
+    document.execCommand(cmd, false, 'transparent');
+    cleanupTransparentHighlightSpans(getClosestEditable(sel.anchorNode));
   } else {
-     document.execCommand('hiliteColor', false, targetColor);
+    // ✅ 아니면 적용/변경
+    document.execCommand(cmd, false, targetColor);
   }
+}
+
+// ---- 헬퍼들 ----
+
+function selectionHasSameBgColor(sel, targetHex) {
+  const targetRgb = toRgb(targetHex);
+
+  const a = nearestBgSpan(sel.anchorNode);
+  const b = nearestBgSpan(sel.focusNode);
+
+  // anchor/focus 둘 중 하나라도 같은 색이면 "같은 색으로 칠해진 상태"로 간주
+  return (a && colorsEqual(getComputedStyle(a).backgroundColor, targetRgb)) ||
+         (b && colorsEqual(getComputedStyle(b).backgroundColor, targetRgb));
+}
+
+function nearestBgSpan(node) {
+  let el = node && node.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
+  while (el && el !== document.body) {
+    if (el.nodeType === 1) {
+      const bg = getComputedStyle(el).backgroundColor;
+      if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') return el;
+    }
+    el = el.parentElement;
+  }
+  return null;
+}
+
+function toRgb(colorStr) {
+  const tmp = document.createElement('span');
+  tmp.style.backgroundColor = colorStr;
+  document.body.appendChild(tmp);
+  const rgb = getComputedStyle(tmp).backgroundColor;
+  document.body.removeChild(tmp);
+  return rgb;
+}
+
+function colorsEqual(a, b) {
+  // 공백 차이 등만 정리해서 비교
+  return String(a).replace(/\s+/g, '') === String(b).replace(/\s+/g, '');
+}
+
+function getClosestEditable(node) {
+  let el = node && node.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
+  while (el && el !== document.body) {
+    if (el.isContentEditable) return el;
+    el = el.parentElement;
+  }
+  return document.body;
+}
+
+function cleanupTransparentHighlightSpans(root) {
+  // transparent/rgba(0,0,0,0) 같은 span들 정리(껍데기만 남는 거 방지)
+  const spans = root.querySelectorAll('span');
+  spans.forEach(span => {
+    const bg = getComputedStyle(span).backgroundColor;
+    if (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
+      // span 풀기
+      const parent = span.parentNode;
+      while (span.firstChild) parent.insertBefore(span.firstChild, span);
+      parent.removeChild(span);
+    }
+  });
 }
 
 function saveFieldData() { 
