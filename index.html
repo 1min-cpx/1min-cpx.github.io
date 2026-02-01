@@ -503,6 +503,8 @@
                 color: #2563eb; 
                 border-color: #bfdbfe; 
         }
+/* 툴바 버튼 찌그러짐 방지 코드 (필수) */
+        .editor-toolbar > * { flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -680,17 +682,23 @@
                 <button onclick="closeModal()" style="font-size:1.5rem; background:none; border:none;">&times;</button>
             </div>
             <div class="editor-toolbar">
-                <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('bold')">B</button>
+		<button class="tool-btn" onmousedown="event.preventDefault(); setFontSize(3)" title="보통" style="font-size:0.9rem; padding:0; width:28px; height:28px;">가</button>
+            	<button class="tool-btn" onmousedown="event.preventDefault(); setFontSize(5)" title="크게" style="font-size:1.1rem; font-weight:bold; padding:0; width:28px; height:28px;">가</button>
+            <div style="width:1px; background:#cbd5e1; margin:0 5px;"></div>    
+		<button class="tool-btn" onmousedown="event.preventDefault(); execCmd('bold')">B</button>
                 <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('italic')"><i>I</i></button>
                 <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('underline')"><u>U</u></button>
-                <div style="width:1px; background:#cbd5e1; margin:0 5px;"></div>
+
+              <div style="width:1px; background:#cbd5e1; margin:0 5px;"></div>
                 <button class="color-btn black" onmousedown="event.preventDefault(); execColor('#334155')"></button>
                 <button class="color-btn red" onmousedown="event.preventDefault(); execColor('#ef4444')"></button>
                 <button class="color-btn blue" onmousedown="event.preventDefault(); execColor('#2563eb')"></button>
-                <div style="width:1px; background:#cbd5e1; margin:0 5px;"></div>
+             <div style="width:1px; background:#cbd5e1; margin:0 5px;"></div>
                 
                 <button class="hl-btn yellow" onmousedown="event.preventDefault(); toggleHighlight('yellow')" title="노란 형광펜"></button>
                 <button class="hl-btn green" onmousedown="event.preventDefault(); toggleHighlight('green')" title="연두 형광펜"></button>
+           	
+
             </div>
             <div style="padding:0 1.5rem 1.5rem; flex:1; display:flex; flex-direction:column; overflow:hidden;">
                 <div class="input-group">
@@ -1293,6 +1301,12 @@ function openModal(code) { const isManager = document.getElementById('manager-pr
 function closeModal() { document.getElementById('input-modal').classList.remove('open'); }
 function execCmd(cmd) { document.execCommand(cmd, false, null); }
 function execColor(color) { document.execCommand('foreColor', false, color); }
+
+
+function setFontSize(size) {
+    document.execCommand('fontSize', false, size);
+}
+
 
 // ✅ 형광펜 토글 (같은 색이면 제거, 다른 색이면 적용/변경)
 function toggleHighlight(color) {
