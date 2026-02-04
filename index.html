@@ -161,6 +161,30 @@
         }
         .card-wrapper.flipped { transform: rotateY(180deg); }
 
+/* ▼▼▼ 기존 코드 아래에 이 내용을 '추가' 해주세요 ▼▼▼ */
+
+        /* 카드가 뒤집혔을 때, 뒷면(Back)을 맨 위로 올리고 터치를 활성화함 */
+        .card-wrapper.flipped .card-back {
+            z-index: 10;            /* 앞면보다 확실히 위로 올림 */
+            pointer-events: auto;   /* 터치 인식 켜기 */
+        }
+
+        /* 카드가 뒤집혔을 때, 앞면(Front)은 터치를 무시하게 만듦 */
+        .card-wrapper.flipped .card-front {
+            pointer-events: none;   /* 터치 인식 끄기 (투명한 벽 제거) */
+            z-index: -1;
+        }
+
+        /* 평소(안 뒤집혔을 때)에는 뒷면 터치 방지 */
+        .card-back {
+            pointer-events: none;
+        }
+        
+        /* 평소에는 앞면 터치 허용 */
+        .card-front {
+            pointer-events: auto;
+        }
+
         .card-face {
             position: absolute; width: 100%; height: 100%;
             backface-visibility: hidden; -webkit-backface-visibility: hidden;
@@ -169,10 +193,14 @@
             border: 1px solid #e2e8f0; background: white;
         }
 
-        /* FRONT SIDE */
+	/* FRONT SIDE */
         .card-front { 
             padding: 2rem; z-index: 2; display: flex; flex-direction: column; gap: 1.2rem; align-items: flex-start; 
             overflow-y: auto;
+            
+            /* ▼▼▼ 여기도 모바일 스크롤 코드 추가 ▼▼▼ */
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
         }
         
         .topic-badge {
@@ -225,7 +253,20 @@
         }
         .icon-btn.delete { color: #ef4444; background: #fef2f2; border-color: #fee2e2; }
 
-        .cpx-form { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+        /* 카드 뒷면(정답) 내용 담는 곳 - 모바일 스크롤 개선 */
+        .cpx-form { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 1rem; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 0.5rem; 
+            
+            /* ▼▼▼ 모바일 터치 스크롤 문제 해결 코드 ▼▼▼ */
+            -webkit-overflow-scrolling: touch; /* 아이폰/패드에서 부드럽게 스크롤 */
+            touch-action: pan-y;               /* 수직(위아래) 스크롤 허용 */
+            overscroll-behavior: contain;      /* 내부 스크롤이 끝나도 바깥 화면이 안 움직이게 함 */
+        }
         .field-group { border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem; }
         .field-header { display: flex; align-items: center; cursor: pointer; padding: 0.5rem 0; }
         .field-label { width: 50px; font-size: 0.95rem; font-weight: 800; color: var(--primary-color); flex-shrink: 0; }
@@ -284,6 +325,7 @@
         .score-badge { 
             font-size: 0.8rem; font-weight: 800; padding: 4px 8px; border-radius: 8px; 
             min-width: 30px; text-align: center;
+	    cursor: pointer; /* ✅ 마우스 올리면 손가락 모양 나오게 추가 */
         }
         .score-green { background: #dcfce7; color: #166534; }
         .score-yellow { background: #fef9c3; color: #854d0e; }
@@ -431,11 +473,22 @@
         .color-btn.black { background: #1e293b; }
         .color-btn.red { background: #ef4444; }
         .color-btn.blue { background: #2563eb; }
-        .rich-editor {
-            width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px;
-            font-size: 1rem; font-family: inherit; resize: none; min-height: 2.5rem;
-            outline: none; line-height: 1.5; color: #334155;
-        }
+      /* ▼▼▼ 여기서부터 복사하세요 ▼▼▼ */
+
+/* 1. 기본 에디터 설정 (화면 비율에 따라 글씨 크기 자동 조절) */
+.rich-editor {
+    width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px;
+    font-size: 1rem;  /* 화면 비율(rem)을 따릅니다 */
+    font-family: inherit; resize: none; min-height: 2.5rem;
+    outline: none; line-height: 1.5; color: #334155;
+}
+
+/* 2. [추가된 부분] '중간(가)' 버튼을 눌렀을 때도 강제로 화면 비율을 따르게 함 */
+.rich-editor font[size="3"] {
+    font-size: 1rem !important;
+}
+
+/* ▲▲▲ 여기까지 복사하세요 ▲▲▲ */
         .rich-editor:focus { border-color: var(--primary-color); background: #f8fafc; }
         .rich-editor.detail { flex: 1; overflow-y: auto; }
         .timer-option-btn {
@@ -1253,7 +1306,7 @@ function renderManager() {
             const badgeText = total > 0 ? total : '-'; 
             
             // ✏️ 버튼 클래스에 ${hasContent ? 'filled' : ''} 추가됨
-            return `<div class="list-item ${!c.isVisible ? 'hidden' : ''}"><div class="item-left"><span class="title">${c.title}</span></div><div class="item-right"><span class="score-badge ${badgeClass}">${badgeText}</span><div class="list-actions"><button class="icon-action-btn edit ${hasContent ? 'filled' : ''}" onclick="openManagerCardPreview(${c.id})"><svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button><button class="icon-action-btn ${c.isVisible?'active':''}" onclick="toggleCard(${c.id})">${c.isVisible ? '<svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>' : '<svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>'}</button></div></div></div>`; }).join('')}</div>`; list.appendChild(catDiv);
+            return `<div class="list-item ${!c.isVisible ? 'hidden' : ''}"><div class="item-left"><span class="title">${c.title}</span></div><div class="item-right"><span class="score-badge ${badgeClass}" onclick="event.stopPropagation(); showScoreDetail(${c.id})">${badgeText}</span><div class="list-actions"><button class="icon-action-btn edit ${hasContent ? 'filled' : ''}" onclick="openManagerCardPreview(${c.id})"><svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button><button class="icon-action-btn ${c.isVisible?'active':''}" onclick="toggleCard(${c.id})">${c.isVisible ? '<svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>' : '<svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>'}</button></div></div></div>`; }).join('')}</div>`; list.appendChild(catDiv);
     }
 }
 function toggleCatCollapse(cat) { collapsedCategories[cat] = !collapsedCategories[cat]; saveCats(); renderManager(); }
@@ -1525,6 +1578,25 @@ function updateTimerUI() {
     else badge.classList.remove('urgent');
 }
 
+// ✅ [추가됨] 정답률 상세 팝업 함수
+function showScoreDetail(id) {
+    const u = userData[id] || {};
+    const o = u.o || 0; // 정답 횟수
+    const x = u.x || 0; // 오답 횟수
+    const total = o + x;
+
+    if (total === 0) {
+        alert("아직 푼 기록이 없습니다.");
+        return;
+    }
+
+    const rate = Math.round((o / total) * 100); // 정답률 계산 (반올림)
+
+    // 팝업 내용 만들기 (\n은 줄바꿈입니다)
+    const msg = `정답 : ${o}회   오답 : ${x}회\n\n정답률 : ${rate} %`;
+    
+    alert(msg);
+}
 
 init();
 </script>
