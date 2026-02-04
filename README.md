@@ -44,5 +44,5 @@
 👉 **[1:1 건의함 바로가기](https://open.kakao.com/o/sNkenIai)**
 
 ---
-Created by KNU FM JSW
-Contributor : KNU BJW 
+**Created by KNU FM JSW**<br>
+**Contributor : KNU BJ**
