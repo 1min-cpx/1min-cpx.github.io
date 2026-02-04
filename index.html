@@ -431,11 +431,22 @@
         .color-btn.black { background: #1e293b; }
         .color-btn.red { background: #ef4444; }
         .color-btn.blue { background: #2563eb; }
-        .rich-editor {
-            width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px;
-            font-size: 1rem; font-family: inherit; resize: none; min-height: 2.5rem;
-            outline: none; line-height: 1.5; color: #334155;
-        }
+      /* ▼▼▼ 여기서부터 복사하세요 ▼▼▼ */
+
+/* 1. 기본 에디터 설정 (화면 비율에 따라 글씨 크기 자동 조절) */
+.rich-editor {
+    width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px;
+    font-size: 1rem;  /* 화면 비율(rem)을 따릅니다 */
+    font-family: inherit; resize: none; min-height: 2.5rem;
+    outline: none; line-height: 1.5; color: #334155;
+}
+
+/* 2. [추가된 부분] '중간(가)' 버튼을 눌렀을 때도 강제로 화면 비율을 따르게 함 */
+.rich-editor font[size="3"] {
+    font-size: 1rem !important;
+}
+
+/* ▲▲▲ 여기까지 복사하세요 ▲▲▲ */
         .rich-editor:focus { border-color: var(--primary-color); background: #f8fafc; }
         .rich-editor.detail { flex: 1; overflow-y: auto; }
         .timer-option-btn {
