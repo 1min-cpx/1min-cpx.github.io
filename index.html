@@ -12,7 +12,7 @@
     <meta property="og:title" content="1분 CPX - 실기시험 순발력 훈련">
     <meta property="og:description" content="C.C를 보고 1분 안에 연상하는 실전 감각 연습. 제작: KNU FM JSW">
 
-    <title>1분 CPX v1.2</title>
+    <title>1분 CPX v1.3</title>
     
     
     <link rel="apple-touch-icon" href="icon.PNG">
@@ -106,26 +106,7 @@
             60% { transform: scale(1); }
         }
 
-      /* [수정됨] 헤더 버튼 영역 가로 스크롤 허용 */
-        .header-controls { 
-            display: flex; 
-            gap: 0.3rem; 
-            align-items: center; 
-            
-            /* ▼▼▼ 공간 부족 시 좌우 스크롤 가능하게 변경 ▼▼▼ */
-            overflow-x: auto;       /* 가로 스크롤 켜기 */
-            padding-right: 1rem;    /* 오른쪽 끝 여백 확보 */
-            max-width: 100%;        /* 부모 영역 넘치지 않게 */
-            
-            /* 스크롤바 숨기기 (깔끔하게) */
-            scrollbar-width: none;  /* Firefox */
-            -ms-overflow-style: none;  /* IE, Edge */
-        }
-        
-        /* Chrome, Safari 스크롤바 숨기기 */
-        .header-controls::-webkit-scrollbar { 
-            display: none; 
-        }
+        .header-controls { display: flex; gap: 0.3rem; align-items: center; }
         .header-btn {
             background: none; border: none; padding: 0.5rem; cursor: pointer; color: #94a3b8;
             border-radius: 8px; font-weight: 700; font-size: 0.85rem;
@@ -142,9 +123,6 @@
             width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
             border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #cbd5e1; cursor: pointer;
             transition: 0.2s;
-
-/* ▼▼▼ 이 줄을 반드시 추가하세요! (절대 찌그러지지 않음) ▼▼▼ */
-            flex-shrink: 0;
         }
         .icon-control-btn.active { background: #eff6ff; color: var(--primary-color); border-color: #bfdbfe; }
         .icon-control-btn:active { transform: scale(0.95); }
@@ -215,7 +193,7 @@
             border: 1px solid #e2e8f0; background: white;
         }
 
-	/* FRONT SIDE */
+    /* FRONT SIDE */
         .card-front { 
             padding: 2rem; z-index: 2; display: flex; flex-direction: column; gap: 1.2rem; align-items: flex-start; 
             overflow-y: auto;
@@ -347,7 +325,7 @@
         .score-badge { 
             font-size: 0.8rem; font-weight: 800; padding: 4px 8px; border-radius: 8px; 
             min-width: 30px; text-align: center;
-	    cursor: pointer; /* ✅ 마우스 올리면 손가락 모양 나오게 추가 */
+    cursor: pointer; /* ✅ 마우스 올리면 손가락 모양 나오게 추가 */
         }
         .score-green { background: #dcfce7; color: #166534; }
         .score-yellow { background: #fef9c3; color: #854d0e; }
@@ -591,7 +569,7 @@
                 <img src="icon.PNG" style="width:2.2rem; height:2.2rem; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
                 <div style="display:flex; flex-direction:column; justify-content:center;">
                     <span class="main-title">1분 CPX</span>
-                    <span class="sub-title">v1.2</span>
+                    <span class="sub-title">v1.3</span>
                 </div>
             </div>
 
@@ -757,10 +735,10 @@
                 <button onclick="closeModal()" style="font-size:1.5rem; background:none; border:none;">&times;</button>
             </div>
             <div class="editor-toolbar">
-		<button class="tool-btn" onmousedown="event.preventDefault(); setFontSize(3)" title="보통" style="font-size:0.9rem; padding:0; width:28px; height:28px;">가</button>
-            	<button class="tool-btn" onmousedown="event.preventDefault(); setFontSize(5)" title="크게" style="font-size:1.1rem; font-weight:bold; padding:0; width:28px; height:28px;">가</button>
+        <button class="tool-btn" onmousedown="event.preventDefault(); setFontSize(3)" title="보통" style="font-size:0.9rem; padding:0; width:28px; height:28px;">가</button>
+                <button class="tool-btn" onmousedown="event.preventDefault(); setFontSize(5)" title="크게" style="font-size:1.1rem; font-weight:bold; padding:0; width:28px; height:28px;">가</button>
             <div style="width:1px; background:#cbd5e1; margin:0 5px;"></div>    
-		<button class="tool-btn" onmousedown="event.preventDefault(); execCmd('bold')">B</button>
+        <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('bold')">B</button>
                 <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('italic')"><i>I</i></button>
                 <button class="tool-btn" onmousedown="event.preventDefault(); execCmd('underline')"><u>U</u></button>
 
@@ -772,8 +750,7 @@
                 
                 <button class="hl-btn yellow" onmousedown="event.preventDefault(); toggleHighlight('yellow')" title="노란 형광펜"></button>
                 <button class="hl-btn green" onmousedown="event.preventDefault(); toggleHighlight('green')" title="연두 형광펜"></button>
-           	
-
+                
             </div>
             <div style="padding:0 1.5rem 1.5rem; flex:1; display:flex; flex-direction:column; overflow:hidden;">
                 <div class="input-group">
@@ -881,8 +858,13 @@
                     </div>
                 </div>
             </div>
-            <div style="padding:1rem; padding-top:0;">
-                <button class="btn" style="background:#f1f5f9; color:#475569;" onclick="document.getElementById('score-modal').classList.remove('open')">닫기</button>
+            <div style="padding:1rem; padding-top:0; display:flex; gap:0.5rem;">
+                <button class="btn" style="flex:1; background:#fee2e2; color:#b91c1c;" id="btn-modal-reset">
+                    ↻ 이 단원 초기화
+                </button>
+                <button class="btn" style="flex:1; background:#f1f5f9; color:#475569;" onclick="document.getElementById('score-modal').classList.remove('open')">
+                    닫기
+                </button>
             </div>
         </div>
     </div>
@@ -897,7 +879,7 @@ const ONBOARDING_DATA = [
     {
         type: 'image', src: 'icon.PNG', color: '',
         title: '시간과 장소를<br>가리지 않는 1분 훈련',
-        desc: `짧은 시간 안에 주소(C.C)를 보고<br><b>Associated Sx</b>부터 <b>PEx</b>까지<br>1분 안에 떠올리는 연습을 위해 만들어졌습니다.<br><br><span style="font-size: 0.8rem; color: #94a3b8;">Created by <b>KNU FM JSW</b></span>`,
+		desc: `짧은 시간 안에 주소(C.C)를 보고<br><b>Associated Sx</b>부터 <b>PEx</b>까지<br>1분 안에 떠올리는 연습을 위해 만들어졌습니다.<br><br><span style="font-size: 0.8rem; color: #94a3b8;">Created by <b>KNU FM JSW</b><br>Contributor: <b>KNU BJW</b></span>`,
         extra: `<div class="warn-box">⚠️ <b>주의:</b> 아직 본격적인 <b>실기 대비 1회차를 시작하지 않았다면</b> 큰 도움이 되지 않을 수 있습니다.</div>`
     },
     {
@@ -1120,7 +1102,7 @@ function generateCase(card) {
 let cards = [], userData = {}, studyDeck = [], mockResults = [], currentIndex = 0, timerTime = 60, timeLeft = 60, timerInterval = null, isInfinite = false, collapsedCategories = {}, isShuffle = false, editTargetId = null, currentMode = 'study', currentSlide = 0;
 
 function init() {
-    console.log("%c 1분 CPX v1.2 \n%c OCR Enabled ", "color: white; background: #2563eb; padding: 5px; border-radius: 4px;", "color: #2563eb; background: white; padding: 5px;");
+    console.log("%c 1분 CPX v1.3 \n%c OCR Enabled ", "color: white; background: #2563eb; padding: 5px; border-radius: 4px;", "color: #2563eb; background: white; padding: 5px;");
     const savedCards = localStorage.getItem('cpx_v37_cards');
     if(savedCards) cards = JSON.parse(savedCards); else { cards = TOPICS.map(t => ({...t, isVisible: true})); saveCards(); }
     const savedUser = localStorage.getItem('cpx_v37_userdata'); if(savedUser) userData = JSON.parse(savedUser);
@@ -1384,12 +1366,6 @@ function renderManager() {
                     </div>
                     
                     <div class="item-right">
-                        <button class="icon-action-btn" onclick="event.stopPropagation(); resetCardStats(${c.id})" 
-                                style="margin-right:0.4rem; width:30px; height:30px; color:#2563eb; border-color:#bfdbfe; background-color:#eff6ff;" 
-                                title="기록 초기화">
-                            <svg style="width:1rem; height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        </button>
-
                         <span class="score-badge ${badgeClass}" onclick="event.stopPropagation(); showScoreDetail(${c.id})">${badgeText}</span>
                         
                         <div class="list-actions">
@@ -1683,12 +1659,7 @@ function showScoreDetail(id) {
     const x = u.x || 0; // 오답
     const total = o + x;
 
-    if (total === 0) {
-        showToast("아직 푼 기록이 없습니다.");
-        return;
-    }
-
-    const rate = Math.round((o / total) * 100);
+    const rate = total === 0 ? 0 : Math.round((o / total) * 100);
     const cardTitle = cards.find(c => c.id === id).title;
 
     document.getElementById('score-modal-title').innerText = cardTitle;
@@ -1696,22 +1667,31 @@ function showScoreDetail(id) {
     document.getElementById('score-modal-o').innerText = o;
     document.getElementById('score-modal-x').innerText = x;
 
+    // ✅ [수정됨] 팝업 안의 초기화 버튼에 현재 id를 전달 (이벤트 바인딩)
+    const resetBtn = document.getElementById('btn-modal-reset');
+    resetBtn.onclick = function() {
+        resetScoreInModal(id);
+    };
+
     document.getElementById('score-modal').classList.add('open');
 }
 
-// ✅ [추가됨] 개별 카드의 학습 기록(정답/오답) 초기화 함수
-function resetCardStats(id) {
-    // 1. 확인 팝업 (브라우저 기본 "확인/취소" 창)
-    if (confirm("이 주제의 학습 기록을 초기화 하시겠습니까?\n(정답/오답 횟수가 0이 됩니다)")) {
-        
-        // 2. 데이터 초기화 로직
-        if (!userData[id]) userData[id] = {};
+// ✅ [추가됨] 팝업 내부에서 실행되는 초기화 함수
+function resetScoreInModal(id) {
+    if(confirm("정말 이 단원의 기록을 초기화하시겠습니까?\n(정답/오답 횟수가 0이 됩니다)")) {
+        if(!userData[id]) userData[id] = {};
         userData[id].o = 0;
         userData[id].x = 0;
-        
-        // 3. 저장 및 화면 갱신
         saveUserData();
-        renderManager(); // 목록 화면 새로고침 (뱃지가 회색 '-'로 변함)
+
+        // 1. 팝업 UI 즉시 0점으로 갱신
+        document.getElementById('score-modal-rate').innerHTML = '0<span style="font-size:1.5rem;">%</span>';
+        document.getElementById('score-modal-o').innerText = '0';
+        document.getElementById('score-modal-x').innerText = '0';
+        
+        // 2. 뒤에 있는 목록 화면 갱신 (뱃지 회색으로 변경)
+        renderManager();
+        
         showToast("초기화되었습니다.");
     }
 }
