@@ -663,8 +663,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             
             <div class="tree-container">
                 <div class="tree-header">
-                    <span>출제 범위 선택</span>
-                    <button class="btn" style="padding:0.3rem 0.8rem; font-size:0.8rem; width:auto; height:auto;" onclick="toggleAllMockTree()">전체 선택/해제</button>
+                    <span>출제 범위 선택 <span id="scope-count" style="color:#2563eb; font-weight:800; font-size:0.9rem; margin-left:4px;">(0/0)</span></span>
+    		    <button class="btn" style="padding:0.3rem 0.8rem; font-size:0.8rem; width:auto; height:auto;" onclick="toggleAllMockTree()">전체 선택/해제</button>
                 </div>
                 <div class="tree-content" id="mock-tree-root"></div>
             </div>
@@ -1397,10 +1397,72 @@ function toggleCatCollapse(cat) { collapsedCategories[cat] = !collapsedCategorie
 function toggleCard(id) { const c = cards.find(x => x.id === id); if(c) { c.isVisible = !c.isVisible; saveCards(); renderManager(); } }
 function toggleCategory(cat) { const items = cards.filter(c => c.cat === cat); const newState = !items.some(c => c.isVisible); items.forEach(c => c.isVisible = newState); saveCards(); renderManager(); }
 function toggleAllCards(state) { cards.forEach(c => c.isVisible = state); saveCards(); renderManager(); }
-function renderMockTree() { const root = document.getElementById('mock-tree-root'); root.innerHTML = ''; const groups = {}; cards.forEach(c => { if(!groups[c.cat]) groups[c.cat] = []; groups[c.cat].push(c); }); for(const [cat, items] of Object.entries(groups)) { items.sort((a,b) => parseInt(a.title.match(/^\d+/)?.[0]||0) - parseInt(b.title.match(/^\d+/)?.[0]||0)); const catDiv = document.createElement('div'); catDiv.className = 'tree-cat'; const checkedCount = items.filter(c => c.isVisible).length; catDiv.innerHTML = `<div class="tree-cat-head" onclick="toggleTreeCat(this)"><input type="checkbox" class="tree-chk-cat" onclick="event.stopPropagation(); checkCat(this)" ${checkedCount>0?'checked':''}><label>${cat} (${items.length})</label><span style="font-size:0.8rem; color:#cbd5e1;">▼</span></div><div class="tree-items">${items.map(c => `<div class="tree-item"><input type="checkbox" class="tree-chk-item" value="${c.id}" ${c.isVisible?'checked':''}><label onclick="this.previousElementSibling.click()">${c.title}</label></div>`).join('')}</div>`; root.appendChild(catDiv); } }
+
+// [수정됨 1] 퀴즈 목록을 그리는 함수
+function renderMockTree() { 
+    const root = document.getElementById('mock-tree-root'); 
+    root.innerHTML = ''; 
+    
+    const groups = {}; 
+    cards.forEach(c => { 
+        if(!groups[c.cat]) groups[c.cat] = []; 
+        groups[c.cat].push(c); 
+    }); 
+    
+    for(const [cat, items] of Object.entries(groups)) { 
+        // 제목 순서 정렬
+        items.sort((a,b) => parseInt(a.title.match(/^\d+/)?.[0]||0) - parseInt(b.title.match(/^\d+/)?.[0]||0)); 
+        
+        const catDiv = document.createElement('div'); 
+        catDiv.className = 'tree-cat'; 
+        const checkedCount = items.filter(c => c.isVisible).length; 
+        
+        // ★ 변경된 부분: 체크박스를 누를 때마다(onchange) 숫자를 다시 세도록(updateScopeCount) 설정
+        catDiv.innerHTML = `
+        <div class="tree-cat-head" onclick="toggleTreeCat(this)">
+            <input type="checkbox" class="tree-chk-cat" onclick="event.stopPropagation(); checkCat(this)" ${checkedCount>0?'checked':''}>
+            <label>${cat} (${items.length})</label>
+            <span style="font-size:0.8rem; color:#cbd5e1;">▼</span>
+        </div>
+        <div class="tree-items">
+            ${items.map(c => `
+                <div class="tree-item">
+                    <input type="checkbox" class="tree-chk-item" value="${c.id}" ${c.isVisible?'checked':''} onchange="updateScopeCount()">
+                    <label onclick="this.previousElementSibling.click()">${c.title}</label>
+                </div>
+            `).join('')}
+        </div>`; 
+        root.appendChild(catDiv); 
+    }
+    
+    // ★ 화면이 처음 그려질 때 숫자 한번 세기
+    updateScopeCount(); 
+}
+
+
 function toggleTreeCat(el) { el.nextElementSibling.classList.toggle('open'); el.querySelector('span').innerText = el.nextElementSibling.classList.contains('open') ? '▲' : '▼'; }
-function checkCat(el) { el.parentElement.nextElementSibling.querySelectorAll('.tree-chk-item').forEach(i => i.checked = el.checked); }
-function toggleAllMockTree() { const all = document.querySelectorAll('#mock-tree-root input[type="checkbox"]'); const state = Array.from(all).some(c => !c.checked); all.forEach(c => c.checked = state); }
+
+// [수정됨 2] 카테고리 전체 체크 함수
+function checkCat(el) { 
+    // 하위 항목들을 부모 체크박스와 똑같이 만듭니다.
+    el.parentElement.nextElementSibling.querySelectorAll('.tree-chk-item').forEach(i => i.checked = el.checked); 
+    
+    // ★ 변경된 부분: 다 체크했으니 숫자를 다시 셉니다.
+    updateScopeCount(); 
+}
+
+// [수정됨 3] 전체 선택/해제 버튼 함수
+function toggleAllMockTree() { 
+    const all = document.querySelectorAll('#mock-tree-root input[type="checkbox"]'); 
+    
+    // 하나라도 체크 안 된 게 있으면 -> 전부 체크 / 전부 체크되어 있으면 -> 전부 해제
+    const state = Array.from(all).some(c => !c.checked); 
+    all.forEach(c => c.checked = state); 
+    
+    // ★ 변경된 부분: 전체가 바뀌었으니 숫자를 다시 셉니다.
+    updateScopeCount(); 
+}
+
 function startMockExam() { const chks = document.querySelectorAll('.tree-chk-item:checked'); if(chks.length === 0) { alert("범위를 선택해주세요."); return; } const num = parseInt(document.getElementById('mock-num').value) || 5; const selectedIds = Array.from(chks).map(c => parseInt(c.value)); const selectedCards = cards.filter(c => selectedIds.includes(c.id)); const cats = {}; selectedCards.forEach(c => { if(!cats[c.cat]) cats[c.cat] = []; cats[c.cat].push(c); }); let pool = []; const catKeys = Object.keys(cats).sort(() => Math.random() - 0.5); catKeys.forEach(k => { if(cats[k].length > 0) { const idx = Math.floor(Math.random() * cats[k].length); pool.push(cats[k][idx]); cats[k].splice(idx, 1); } }); let remaining = num - pool.length; let leftovers = []; Object.values(cats).forEach(arr => leftovers.push(...arr)); if(remaining > 0 && leftovers.length > 0) { leftovers.sort(() => Math.random() - 0.5); pool.push(...leftovers.slice(0, remaining)); } else if (remaining < 0) { pool = pool.slice(0, num); } pool.sort(() => Math.random() - 0.5); currentMode = 'mock'; studyDeck = pool; currentIndex = 0; mockResults = []; document.getElementById('study-view').classList.add('active'); document.getElementById('mock-setup-view').classList.remove('active'); renderCard(); showToast(`${pool.length}문제 퀴즈 시작!`); }
 function showMockResult() { 
     switchMode('mock-result'); 
@@ -1704,6 +1766,14 @@ function resetScoreInModal(id) {
         
         showToast("초기화되었습니다.");
     }
+}
+
+// ✅ [추가됨] 출제 범위 카운트 갱신 함수
+function updateScopeCount() {
+    const total = document.querySelectorAll('.tree-chk-item').length;
+    const checked = document.querySelectorAll('.tree-chk-item:checked').length;
+    const el = document.getElementById('scope-count');
+    if(el) el.innerText = `(${checked} / ${total})`;
 }
 
 // ✅ [추가됨] 계통(Category)별 통계 초기화 함수
