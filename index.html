@@ -925,7 +925,7 @@ const ONBOARDING_DATA = [
         path: `<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline>`,
         title: '데이터 백업 & 주의사항',
         desc: `목록 탭 하단의 <b>[내보내기/가져오기]</b>를 통해<br>아이폰↔아이패드↔PC 간 데이터를<br>자유롭게 이동할 수 있습니다.`,
-        extra: `<div class="warn-box" style="text-align:center; font-size:0.9rem;">🚨 <b>매우 중요!</b><br>이 앱은 서버가 없습니다.<br><b>'인터넷 사용 기록(캐시) 삭제'</b>를 하면<br>작성한 내용이 모두 사라집니다.<br><b>꼭! 수시로 백업 코드를 복사해두세요.</b></div>`
+        extra: `<div class="warn-box" style="text-align:left; font-size:0.85rem; line-height: 1.5;">🚨 <b>매우 중요!</b><br>이 앱은 서버가 없습니다. 인터넷 캐시 삭제 시 작성한 내용이 모두 사라집니다.<br><br>⚠️ <b>절대 주의:</b> 글자 수가 많아 <b>카카오톡으로 복사하면 내용이 잘리고 훼손</b>됩니다. 백업 코드는 반드시 기기의 <b>'메모장'</b> 앱에 붙여넣어 보관하세요!</div>`
     }
 ];
 
@@ -944,12 +944,12 @@ const TOPICS = [
     {id:27, cat:"관절/근골격/피부", title:"27. 피부 발진"}, {id:28, cat:"정신/신경", title:"28. 기분 변화"}, {id:29, cat:"정신/신경", title:"29. 불안"},
     {id:30, cat:"정신/신경", title:"30. 수면장애"}, {id:31, cat:"정신/신경", title:"31. 기억력 저하"}, {id:32, cat:"정신/신경", title:"32. 어지럼"},
     {id:33, cat:"정신/신경", title:"33. 두통"}, {id:34, cat:"정신/신경", title:"34. 경련"}, {id:35, cat:"정신/신경", title:"35. 근력/감각 이상"},
-    {id:36, cat:"정신/신경", title:"36. 의식장애"}, {id:37, cat:"정신/신경", title:"37. 떨림/운동 이상"}, {id:38, cat:"산부/여성/소아", title:"38. 유방통/유방덩이"},
+    {id:36, cat:"정신/신경", title:"36. 의식장애"}, {id:37, cat:"정신/신경", title:"37. 떨림/운동 이상"}, {id:38, cat:"산부/여성/소아", title:"38-1. 유방통"},
     {id:39, cat:"산부/여성/소아", title:"39-1. 질분비물"}, {id:61, cat:"산부/여성/소아", title:"39-2. 질출혈"}, {id:40, cat:"산부/여성/소아", title:"40-1. 월경 이상"},
     {id:62, cat:"산부/여성/소아", title:"40-2. 월경통"}, {id:41, cat:"산부/여성/소아", title:"41. 산전 진찰"}, {id:42, cat:"산부/여성/소아", title:"42-1. 성장 지연"},
     {id:63, cat:"산부/여성/소아", title:"42-2. 발달 지연"}, {id:43, cat:"산부/여성/소아", title:"43. 예방접종"}, {id:44, cat:"상담", title:"44-1. 음주 상담"},
     {id:64, cat:"상담", title:"44-2. 금연 상담"}, {id:45, cat:"상담", title:"45. 물질 오남용"}, {id:46, cat:"상담", title:"46. 나쁜 소식 전하기"},
-    {id:47, cat:"상담", title:"47-1. 가정 폭력"}, {id:65, cat:"상담", title:"47-2. 성 폭력"}, {id:48, cat:"상담", title:"48. 자살"}
+    {id:47, cat:"상담", title:"47-1. 가정 폭력"}, {id:65, cat:"상담", title:"47-2. 성 폭력"}, {id:48, cat:"상담", title:"48. 자살"}, {id:66, cat:"산부/여성/소아", title:"38-2. 유방덩이"}
 ];
 
 const NAMES_L = ['김','이','박','최','정','강','조','윤','장','임'];
@@ -1035,7 +1035,8 @@ function generateCase(card) {
         case 35: scenario = getRandomItem(["팔다리에 힘이 빠진다고 내원하였다.", "팔에 힘이 빠진다고 내원하였다."]); break;
         case 36: scenario = getRandomItem(["쓰러졌다며 응급실로 내원하였다.", "의식이 떨어져 보호자와 함께 응급실로 내원하였다."]); break;
         case 37: scenario = "손이 떨린다고 내원하였다."; break;
-        case 38: isMale=false; scenario = getRandomItem(["유방 통증을 호소하며 내원하였다.", "유방에서 덩이가 만져져 내원하였다."]); break;
+        case 38: isMale=false; scenario = "유방 통증을 호소하며 내원하였다."; break;
+        case 66: isMale=false; scenario = "유방에서 덩이가 만져져 내원하였다."; break;
         case 39: isMale=false; scenario = getRandomItem(["냉이 많아져 내원하였다.", "질분비물이 있다고 내원하였다."]); break;
         case 61: isMale=false; scenario = "질출혈이 있어서 내원하였다."; break;
         case 40: isMale=false; scenario = getRandomItem(["월경을 안 해서 내원하였다.", "월경량이 많아졌다고 내원하였다."]); break;
@@ -1114,7 +1115,20 @@ let cards = [], userData = {}, studyDeck = [], mockResults = [], currentIndex = 
 function init() {
     console.log("%c 1분 CPX v1.3 \n%c OCR Enabled ", "color: white; background: #2563eb; padding: 5px; border-radius: 4px;", "color: #2563eb; background: white; padding: 5px;");
     const savedCards = localStorage.getItem('cpx_v37_cards');
-    if(savedCards) cards = JSON.parse(savedCards); else { cards = TOPICS.map(t => ({...t, isVisible: true})); saveCards(); }
+    
+    if(savedCards) { 
+        cards = JSON.parse(savedCards); 
+        // ✅ 데이터 동기화 시스템: 기존 캐시를 유지하면서 변경/추가된 TOPICS를 자동 병합
+        TOPICS.forEach(t => {
+            const exist = cards.find(c => c.id === t.id);
+            if(exist) { exist.title = t.title; } // 이름이 바뀐 경우 업데이트 (예: 38번)
+            else { cards.push({...t, isVisible: true}); } // 새로 추가된 항목 병합 (예: 66번)
+        });
+        saveCards();
+    } else { 
+        cards = TOPICS.map(t => ({...t, isVisible: true})); 
+        saveCards(); 
+    }
     const savedUser = localStorage.getItem('cpx_v37_userdata'); if(savedUser) userData = JSON.parse(savedUser);
     const savedCats = localStorage.getItem('cpx_v37_cats'); if(savedCats) collapsedCategories = JSON.parse(savedCats);
     const savedShuffle = localStorage.getItem('cpx_v38_shuffle'); isShuffle = savedShuffle !== null ? JSON.parse(savedShuffle) : false;
@@ -1577,13 +1591,13 @@ async function exportDataToClipboard() {
 
     try {
         await navigator.clipboard.writeText(jsonString);
-        alert("데이터가 클립보드에 복사되었습니다!\n\n카카오톡이나 메모장에 '붙여넣기'하여 보관하세요.");
+        alert("✅ 데이터가 클립보드에 복사되었습니다!\n\n🚨 [절대 주의]\n글자 수가 많아 카카오톡으로 보내면 내용이 잘리고 훼손됩니다.\n반드시 기기의 '메모장' 앱을 열어서 붙여넣기 하여 보관하세요!");
     } catch (err) {
         const textArea = document.getElementById('import-text-area');
         textArea.value = jsonString;
         document.querySelector('details').open = true;
         textArea.select();
-        alert("자동 복사에 실패했습니다.\n아래 텍스트 상자의 내용을 '전체 선택' -> '복사' 하세요.");
+        alert("자동 복사에 실패했습니다.\n아래 텍스트 상자의 내용을 '전체 선택' -> '복사' 하세요.\n\n🚨 [절대 주의]\n카카오톡으로 보내면 내용이 훼손되니, 반드시 '메모장'에 붙여넣으세요!");
     }
 }
 
@@ -1730,4 +1744,5 @@ init();
 </script>
 </body>
 </html>
+
 
