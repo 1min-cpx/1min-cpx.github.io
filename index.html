@@ -1325,12 +1325,47 @@ function deleteCardData(id) {
 function toggleExpl(el) { el.nextElementSibling.classList.toggle('show'); }
 function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1500); }
 function switchMode(mode) {
-    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.querySelectorAll('.header-btn').forEach(el => el.classList.remove('active'));
-    const btnReset = document.getElementById('btn-reset'); const btnShuffle = document.getElementById('btn-shuffle');
-    if(mode === 'study') { document.getElementById('study-view').classList.add('active'); document.getElementById('btn-mode-study').classList.add('active'); btnReset.style.display = 'flex'; btnShuffle.style.display = 'flex'; if(studyDeck.length > 0) renderCard(); }
-    else if (mode === 'manager') { document.getElementById('manager-view').classList.add('active'); document.getElementById('btn-mode-list').classList.add('active'); btnReset.style.display = 'none'; btnShuffle.style.display = 'none'; stopTimer(); renderManager(); }
-    else if (mode.startsWith('mock')) { document.getElementById('btn-mode-mock').classList.add('active'); btnReset.style.display = 'none'; btnShuffle.style.display = 'none';
-        if(mode === 'mock-setup') { document.getElementById('mock-setup-view').classList.add('active'); renderMockTree(); } else if(mode === 'mock-result') { document.getElementById('mock-result-view').classList.add('active'); } stopTimer();
+    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.header-btn').forEach(el => el.classList.remove('active'));
+    
+    const btnReset = document.getElementById('btn-reset');
+    const btnShuffle = document.getElementById('btn-shuffle');
+
+    if(mode === 'study') {
+        // ✅ [버그 픽스] 퀴즈나 오답노트 상태에서 '학습' 탭을 눌렀다면
+        // 단순히 껍데기만 바꾸는 게 아니라, 엔진을 '일반 학습' 상태로 완전히 초기화
+        if (currentMode !== 'study') {
+            startSession('silent');
+            return; // startSession 내부에서 switchMode와 renderCard를 다시 호출하므로 여기서 깔끔하게 종료
+        }
+
+        document.getElementById('study-view').classList.add('active');
+        document.getElementById('btn-mode-study').classList.add('active');
+        btnReset.style.display = 'flex'; 
+        btnShuffle.style.display = 'flex';
+        
+        if(studyDeck.length > 0) renderCard();
+    }
+    else if (mode === 'manager') { 
+        document.getElementById('manager-view').classList.add('active'); 
+        document.getElementById('btn-mode-list').classList.add('active'); 
+        btnReset.style.display = 'none'; 
+        btnShuffle.style.display = 'none'; 
+        stopTimer(); 
+        renderManager(); 
+    }
+    else if (mode.startsWith('mock')) { 
+        document.getElementById('btn-mode-mock').classList.add('active'); 
+        btnReset.style.display = 'none'; 
+        btnShuffle.style.display = 'none';
+        
+        if(mode === 'mock-setup') { 
+            document.getElementById('mock-setup-view').classList.add('active'); 
+            renderMockTree(); 
+        } else if(mode === 'mock-result') { 
+            document.getElementById('mock-result-view').classList.add('active'); 
+        } 
+        stopTimer();
     }
 }
 /* ▼▼▼ [최종] 계통별 초기화 버튼 + 개별 초기화 버튼 적용 ▼▼▼ */
@@ -1814,6 +1849,7 @@ init();
 </script>
 </body>
 </html>
+
 
 
 
