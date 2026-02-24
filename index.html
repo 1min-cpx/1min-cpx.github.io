@@ -379,7 +379,21 @@
         .result-card { background: white; border-radius: 16px; padding: 2rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 1rem; }
         .result-score { font-size: 3.5rem; font-weight: 900; color: var(--primary-color); margin: 0.5rem 0; line-height: 1; }
         .result-msg { font-size: 1rem; font-weight: 700; color: #64748b; margin-bottom: 1.5rem; }
-        .result-list { text-align: left; background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 1rem; }
+        .result-list { 
+    text-align: left; 
+    background: white; 
+    border-radius: 12px; 
+    border: 1px solid #e2e8f0; 
+    margin-bottom: 1rem; 
+    
+    /* ▼ 스크롤을 위한 추가/수정 코드 ▼ */
+    flex: 1; /* 남은 가운데 공간을 꽉 채움 */
+    overflow-y: auto; /* 리스트가 길어지면 세로 스크롤 생성 */
+    overflow-x: hidden; /* 가로가 삐져나와 테두리를 가리는 현상 방지 */
+    -webkit-overflow-scrolling: touch; /* 아이폰/패드에서 부드러운 가속 스크롤 */
+    touch-action: pan-y; /* 모바일 세로 터치 허용 */
+    overscroll-behavior: contain; /* 리스트 끝까지 내렸을 때 전체 화면이 흔들리는 현상 방지 */
+}
         .result-item { padding: 1rem; border-bottom: 1px solid #f1f5f9; display: flex; gap: 0.8rem; align-items: center; cursor: pointer; }
         .result-item:active { background: #f8fafc; }
         .res-badge { padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 800; min-width: 30px; text-align: center; }
@@ -1849,6 +1863,7 @@ init();
 </script>
 </body>
 </html>
+
 
 
 
