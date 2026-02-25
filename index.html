@@ -708,6 +708,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div id="manager-view" class="view-section">
         <div class="list-action-bar">
+            <div style="margin-right:auto; font-size:0.95rem; font-weight:700; color:#475569;">
+                학습할 주제 선택 <span id="manager-scope-count" style="color:#2563eb; font-weight:900;">(0 / 0)</span>
+            </div>
             <button class="btn" style="width:auto; padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="showOnboarding(true)">
                 💡 도움말
             </button>
@@ -1382,7 +1385,7 @@ function switchMode(mode) {
         stopTimer();
     }
 }
-/* ▼▼▼ [최종] 계통별 초기화 버튼 + 개별 초기화 버튼 적용 ▼▼▼ */
+/* ▼▼▼ [최종] 계통별 초기화 버튼 + 개별 초기화 버튼 + 카운트 적용 ▼▼▼ */
 function renderManager() {
     const list = document.getElementById('list-container'); 
     list.innerHTML = ''; 
@@ -1394,6 +1397,15 @@ function renderManager() {
     const toggleBtn = document.getElementById('btn-toggle-all'); 
     toggleBtn.innerHTML = allVisible ? '❎ 전체 해제' : '☑️ 전체 선택'; 
     toggleBtn.onclick = () => toggleAllCards(!allVisible);
+
+    // ★★★ [새로 추가된 부분] 선택된 카드 갯수 세어서 화면에 표시하기 ★★★
+    const visibleCount = cards.filter(c => c.isVisible).length;
+    const totalCount = cards.length;
+    const countSpan = document.getElementById('manager-scope-count');
+    if (countSpan) {
+        countSpan.innerText = `(${visibleCount} / ${totalCount})`;
+    }
+    // ★★★ 여기까지 ★★★
     
     for(const [cat, items] of Object.entries(groups)) {
         const allHidden = items.every(c => !c.isVisible); 
