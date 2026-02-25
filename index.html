@@ -609,7 +609,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="icon-control-btn" id="btn-shuffle" onclick="toggleShuffle()" style="margin-right:0.3rem;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
             </button>
-            <button class="header-btn active" id="btn-mode-study" onclick="switchMode('study')">
+            <button class="header-btn active" id="btn-mode-study" onclick="navToStudy()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                 학습
             </button>
@@ -1342,26 +1342,18 @@ function deleteCardData(id) {
 function toggleExpl(el) { el.nextElementSibling.classList.toggle('show'); }
 function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1500); }
 function switchMode(mode) {
-    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); 
     document.querySelectorAll('.header-btn').forEach(el => el.classList.remove('active'));
     
-    const btnReset = document.getElementById('btn-reset');
+    const btnReset = document.getElementById('btn-reset'); 
     const btnShuffle = document.getElementById('btn-shuffle');
-
-    if(mode === 'study') {
-        // ✅ [버그 픽스] 퀴즈나 오답노트 상태에서 '학습' 탭을 눌렀다면
-        // 단순히 껍데기만 바꾸는 게 아니라, 엔진을 '일반 학습' 상태로 완전히 초기화
-        if (currentMode !== 'study') {
-            startSession('silent');
-            return; // startSession 내부에서 switchMode와 renderCard를 다시 호출하므로 여기서 깔끔하게 종료
-        }
-
-        document.getElementById('study-view').classList.add('active');
-        document.getElementById('btn-mode-study').classList.add('active');
+    
+    if(mode === 'study') { 
+        document.getElementById('study-view').classList.add('active'); 
+        document.getElementById('btn-mode-study').classList.add('active'); 
         btnReset.style.display = 'flex'; 
-        btnShuffle.style.display = 'flex';
-        
-        if(studyDeck.length > 0) renderCard();
+        btnShuffle.style.display = 'flex'; 
+        if(studyDeck.length > 0) renderCard(); 
     }
     else if (mode === 'manager') { 
         document.getElementById('manager-view').classList.add('active'); 
@@ -1870,11 +1862,22 @@ function resetCategoryStats(catName) {
         showToast(`'${catName}' 기록이 초기화되었습니다.`);
     }
 }
-
+function navToStudy() {
+    // 엔진이 일반 학습(study)이 아닌 다른 모드(mock, review 등)에 있었다면,
+    // 완전히 초기화하여 1번 카드부터 다시 세팅합니다.
+    if (currentMode !== 'study') {
+        startSession('nav'); 
+    } else {
+        // 이미 일반 학습 모드였다면, 단순히 화면만 전환하여 이어서 풉니다.
+        switchMode('study');
+    }
+}
+	
 init();
 </script>
 </body>
 </html>
+
 
 
 
