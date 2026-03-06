@@ -19,7 +19,7 @@
     <meta property="og:title" content="1분 CPX - 실기시험 순발력 훈련">
     <meta property="og:description" content="C.C를 보고 1분 안에 연상하는 실전 감각 연습. 제작: KNU FM JSW">
 
-    <title>1분 CPX v2.0</title>
+    <title>1분 CPX v2.1</title>
     
     
     <link rel="apple-touch-icon" href="icon.PNG">
@@ -592,7 +592,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <img src="icon.PNG" style="width:2.2rem; height:2.2rem; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
                 <div style="display:flex; flex-direction:column; justify-content:center;">
                     <span class="main-title">1분 CPX</span>
-                    <span class="sub-title">v2.0</span>
+                    <span class="sub-title">v2.1</span>
                 </div>
             </div>
 
@@ -671,7 +671,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <button class="btn" style="grid-column: span 2;" onclick="returnToResults()">🔙 결과 화면으로 돌아가기</button>
             </div>
         </div>
-        <div class="toast-container"><div id="toast" class="toast">메시지</div></div>
     </div>
 
     <div id="mock-setup-view" class="view-section" style="background:#fff;">
@@ -798,7 +797,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </details>
         </div>
     </div>
-    
+    <div class="toast-container"><div id="toast" class="toast">메시지</div></div>
     <div class="modal-overlay" id="input-modal">
         <div class="modal-content">
             <div style="padding:1rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
@@ -2296,12 +2295,59 @@ function finishPracticalSet() {
     document.getElementById(`blind-content-${currentPracticalSetIndex}`).style.display = 'flex';
     showToast("수고하셨습니다! 결과를 확인하세요.");
 }
+// [시스템 최적화] 안드로이드 뒤로가기 & PC ESC 키 방어 로직
+window.addEventListener('popstate', function() {
+    // 앱 내의 모든 모달(팝업창) 목록
+    const modals = ['input-modal', 'manager-preview-modal', 'score-modal', 'timer-modal', 'onboarding-modal'];
+    
+    // 스마트폰 뒤로가기를 눌렀을 때, 열려있는 모달이 있으면 앱을 끄는 대신 모달만 닫음
+    for (let id of modals) {
+        const modal = document.getElementById(id);
+        if (modal && modal.classList.contains('open')) {
+            modal.classList.remove('open');
+            break; // 한 번에 창 하나씩만 닫기 (겹쳐있을 경우 방지)
+        }
+    }
+});
 
+document.addEventListener('keydown', function(e) {
+    if (e.key === "Escape") {
+        const modals = ['input-modal', 'manager-preview-modal', 'score-modal', 'timer-modal', 'onboarding-modal'];
+        for (let id of modals) {
+            const modal = document.getElementById(id);
+            if (modal && modal.classList.contains('open')) {
+                modal.classList.remove('open');
+                history.back(); // ESC로 닫았을 땐 가짜 방문기록도 빼줌
+                break; 
+            }
+        }
+    }
+});
+
+// 기존 함수를 가로채서(Overriding) 모달이 열릴 때 브라우저에 '가짜 방문기록' 남기기
+const originalOpenPreview = openManagerCardPreview;
+openManagerCardPreview = function(id) {
+    history.pushState(null, null, '#preview'); // 가짜 기록 추가
+    originalOpenPreview(id);
+};
+
+const originalOpenModal = openModal;
+openModal = function(code) {
+    history.pushState(null, null, '#edit'); // 가짜 기록 추가
+    originalOpenModal(code);
+};
+
+const originalShowScoreDetail = showScoreDetail;
+showScoreDetail = function(id) {
+    history.pushState(null, null, '#score'); // 가짜 기록 추가
+    originalShowScoreDetail(id);
+};
 setTimeout(updatePracticalCalc, 500);	
 init();
 </script>
 </body>
 </html>
+
 
 
 
