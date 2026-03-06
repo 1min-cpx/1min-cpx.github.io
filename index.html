@@ -19,7 +19,7 @@
     <meta property="og:title" content="1분 CPX - 실기시험 순발력 훈련">
     <meta property="og:description" content="C.C를 보고 1분 안에 연상하는 실전 감각 연습. 제작: KNU FM JSW">
 
-    <title>1분 CPX v1.3</title>
+    <title>1분 CPX v2.0</title>
     
     
     <link rel="apple-touch-icon" href="icon.PNG">
@@ -533,8 +533,7 @@
             
             /* 2. 왼쪽 브랜드 로고 다이어트 */
             .brand-box .main-title { font-size: 0.9rem; white-space: nowrap; } 
-            .brand-box .sub-title { display: none; } /* 버전 정보(v1.2)는 공간 확보를 위해 숨김 */
-            .timer-badge { padding: 0.2rem 0.4rem; font-size: 0.8rem; }
+            .brand-box .sub-title { font-size: 0.7rem; margin-top: -2px; display: block; } /* 모바일에서도 숨기지 않음 */            .timer-badge { padding: 0.2rem 0.4rem; font-size: 0.8rem; }
             .timer-badge svg { width: 0.9rem; height: 0.9rem; } /* 시계 아이콘 축소 */
 
             /* 3. 오른쪽 버튼 컨트롤 영역 */
@@ -593,7 +592,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <img src="icon.PNG" style="width:2.2rem; height:2.2rem; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
                 <div style="display:flex; flex-direction:column; justify-content:center;">
                     <span class="main-title">1분 CPX</span>
-                    <span class="sub-title">v1.3</span>
+                    <span class="sub-title">v2.0</span>
                 </div>
             </div>
 
@@ -603,12 +602,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
         </div>
         <div class="header-controls">
-            <button class="icon-control-btn" id="btn-reset" onclick="startSession('reset')" style="margin-right:0.3rem;">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-            </button>
-            <button class="icon-control-btn" id="btn-shuffle" onclick="toggleShuffle()" style="margin-right:0.3rem;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
-            </button>
             <button class="header-btn active" id="btn-mode-study" onclick="navToStudy()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                 학습
@@ -616,6 +609,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="header-btn" id="btn-mode-mock" onclick="switchMode('mock-setup')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle></svg>
                 퀴즈
+            </button>
+            <button class="header-btn" id="btn-mode-practical" onclick="switchMode('practical')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                실전
             </button>
             <button class="header-btn" id="btn-mode-list" onclick="switchMode('manager')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
@@ -626,7 +623,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div id="study-view" class="view-section active">
         <div class="progress-bar-area"><div class="progress-fill" id="progress-fill"></div></div>
-        <div class="progress-float" id="progress-text">0 / 0</div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1.5rem 0 1.5rem;">
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="icon-control-btn" id="btn-reset" onclick="startSession('reset')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                </button>
+                <button class="icon-control-btn" id="btn-shuffle" onclick="toggleShuffle()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+                </button>
+            </div>
+            <div id="progress-text" style="font-size: 0.85rem; font-weight: 800; color: #94a3b8;">0 / 0</div>
+        </div>
 
         <div class="card-area">
             <div class="card-wrapper" id="card-wrapper">
@@ -705,7 +713,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="btn" onclick="switchMode('mock-setup')">새로운 퀴즈 하기</button>
         </div>
     </div>
+	<div id="practical-view" class="view-section" style="background:#f1f5f9; padding:1.5rem; overflow-y:auto;">
+        <div class="result-card" style="margin-bottom: 1rem; padding: 1.5rem;">
+            <div style="font-size:1.2rem; font-weight:900; color:#1e293b; margin-bottom: 1rem;">실전 스케줄러 생성</div>
+            
+            <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+                <button class="btn" id="btn-mode-review" style="flex:1; background:#334155; font-size:0.95rem; padding:0.8rem;" onclick="setPracticalMode('review')">📚 회독 모드</button>
+                <button class="btn" id="btn-mode-final" style="flex:1; background:#f1f5f9; color:#475569; font-size:0.95rem; padding:0.8rem;" onclick="setPracticalMode('final')">🔥 파이날 모드</button>
+            </div>
+            
+            <div id="practical-desc" style="font-size:0.85rem; color:#64748b; margin-bottom:1rem; text-align:left; background:#f8fafc; padding:0.8rem; border-radius:8px; line-height:1.4;">
+                계통별 골고루 출제되는 규칙이 깨지더라도 전체 58개 증례의 빠른 1회독에 집중된 모드입니다.
+            </div>
 
+            <div id="review-setup-area" style="display:flex; flex-direction:column; align-items:center; margin-bottom:1rem;">
+                <div style="display:flex; align-items:center; gap:1rem; margin-bottom:0.5rem;">
+                    <span style="font-weight:700; font-size:0.95rem; color:#475569;">1세트당 문제 수</span>
+                    <input type="number" id="practical-num" class="num-input" value="10" min="1" max="58" style="width:70px; padding:0.5rem;" oninput="updatePracticalCalc()">
+                </div>
+                <div id="practical-calc-text" style="color:#2563eb; font-weight:800; font-size:0.9rem;">5세트 + 나머지(8문제)</div>
+            </div>
+
+            <button class="btn" style="width:100%;" onclick="generatePracticalSets()">스케줄 세트 생성하기</button>
+        </div>
+
+        <div id="practical-sets-container" style="display:none; flex-direction:column; gap:0.8rem; padding-bottom:3rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:800; color:#334155;">생성된 스케줄</span>
+                <button class="btn btn-blue-outline" style="width:auto; padding:0.4rem 0.8rem; font-size:0.8rem;" onclick="copyScheduleToClipboard()">📋 일정표로 카톡복사</button>
+            </div>
+            <div id="sets-render-area" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+        </div>
+    </div>
     <div id="manager-view" class="view-section">
         <div class="list-action-bar">
             <div style="margin-right:auto; font-size:0.95rem; font-weight:700; color:#475569;">
@@ -911,28 +950,35 @@ const ONBOARDING_DATA = [
     {
         type: 'image', src: 'icon.PNG', color: '',
         title: '시간과 장소를<br>가리지 않는 1분 훈련',
-		desc: `짧은 시간 안에 주소(C.C)를 보고<br><b>Associated Sx</b>부터 <b>PEx</b>까지<br>1분 안에 떠올리는 연습을 위해 만들어졌습니다.<br><br><span style="font-size: 0.8rem; color: #94a3b8;">Created by <b>KNU FM JSW</b><br>Contributor: <b>KNU BJW</b></span>`,
+        desc: `짧은 시간 안에 주소(C.C)를 보고<br><b>Associated Sx</b>부터 <b>PEx</b>까지<br>1분 안에 떠올리는 연습을 위해 만들어졌습니다.<br><br><span style="font-size: 0.8rem; color: #94a3b8;">Created by <b>KNU FM JSW</b><br>Contributor: <b>KNU BJW</b></span>`,
         extra: `<div class="warn-box">⚠️ <b>주의:</b> 아직 본격적인 <b>실기 대비 1회차를 시작하지 않았다면</b> 큰 도움이 되지 않을 수 있습니다.</div>`
     },
     {
-        type: 'svg', color: '#2563eb',
-        path: `<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>`,
+        type: 'header-style', color: '#2563eb', text: '학습',
+        iconPath: `<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>`,
         title: '오늘의 공부를 복습하세요',
         desc: `학습모드에서 제한 시간과 순서를 설정해 무작위 증례를 학습합니다.<br>카드 뒷면에서 바로 내용을 수정할 수 있습니다.`,
         extra: `<div class="tip-box">💡 <b>Tip:</b> 1회차 연습을 돌면서,<br><b>그날 진행했던 주제를 복습</b>하는 용도로 추천합니다.</div>`
     },
     {
-        type: 'svg', color: '#2563eb',
-        path: `<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle>`,
+        type: 'header-style', color: '#2563eb', text: '퀴즈',
+        iconPath: `<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle>`,
         title: '실전 감각 키우기',
         desc: `퀴즈모드에서 원하는 계통과 문제 수를 설정해 무작위로 테스트합니다.`,
-        extra: `<div class="tip-box">💡 <b>Tip:</b> 전체 회독이 끝난<br><b>2회차 이후부터</b>, 전 범위를 선택해 실력을 유지하세요.</div>`
+        extra: `<div class="tip-box">💡 <b>Tip:</b> 준비해야 되는 주소들을 선별하여 무작위로 풀어보고 틀린 주소 카드를 바로 복습해보세요.</div>`
     },
     {
-        type: 'svg', color: '#2563eb',
-        path: `<line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>`,
+        type: 'header-style', color: '#2563eb', text: '실전',
+        iconPath: `<circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle>`,
+        title: '실전 스케줄러 & 파이널 모의고사',
+        desc: `랜덤으로 만들어진 회독모드로 빠른 회독을, 국시출제 경향을 따라 만들어진 파이널 모드를 통해 실전 감각을 기르세요.`,
+        extra: `<div class="tip-box">💡 <b>Tip:</b> 해당 모드는 카드 공부 뿐 아니라 조원들과 랜덤 스케줄을 짜는데 사용할 수 있도록 '일정표로 카톡복사' 기능을 제공합니다.</div>`
+    },
+    {
+        type: 'header-style', color: '#2563eb', text: '목록',
+        iconPath: `<line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>`,
         title: '나만의 암기법 완성',
-        desc: `한끝, 유니온, 알렌... 다양한 암기법 중<br>목록에서 <b>연필 아이콘(✏️)</b>을 눌러<br>내 입에 맞는 키워드를 적어두세요.<br>카메라 버튼을 눌러 편하게 입력도 가능합니다!`,
+        desc: `한끝, 유니온, 알렌... 다양한 암기법 중<br>목록에서 <b>연필 아이콘(✏️)</b>을 눌러<br>내 입에 맞는 키워드를 적어두세요.`,
         extra: `<div class="tip-box">💡 <b>Tip:</b> 지금 바로 목록으로 가서,<br><b>오늘 공부한 주제부터</b> 정리를 시작해보세요!</div>`
     },
     {
@@ -947,31 +993,86 @@ const ONBOARDING_DATA = [
         path: `<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline>`,
         title: '데이터 백업 & 주의사항',
         desc: `목록 탭 하단의 <b>[내보내기/가져오기]</b>를 통해<br>아이폰↔아이패드↔PC 간 데이터를<br>자유롭게 이동할 수 있습니다.`,
-        extra: `<div class="warn-box" style="text-align:left; font-size:0.85rem; line-height: 1.5;">🚨 <b>매우 중요!</b><br>이 앱은 서버가 없습니다. 인터넷 캐시 삭제 시 작성한 내용이 모두 사라집니다.<br><br>⚠️ <b>절대 주의:</b> 글자 수가 많아 <b>카카오톡으로 복사하면 내용이 잘리고 훼손</b>됩니다. 백업 코드는 반드시 기기의 <b>'메모장'</b> 앱에 붙여넣어 보관하세요!</div>`
+        extra: `<div class="warn-box" style="text-align:left; font-size:0.85rem; line-height: 1.5;">🚨 <b>매우 중요!</b><br>이 앱은 서버가 없습니다. 인터넷 캐시 삭제 시 작성한 내용이 모두 사라집니다.<br><br>⚠️ <b>절대 주의:</b> 백업코드는 반드시 <b>"파일 다운로드"</b>를 통해 저장해두세요!</div>`
     }
 ];
 
 // 2. 주제 데이터 (원래 있던 것)
+// 2. 주제 데이터 (파이날 모드 알고리즘용 mockGroup 및 subGroup 탑재)
 const TOPICS = [
-    {id:1, cat:"소화기", title:"01. 급성 복통"}, {id:2, cat:"소화기", title:"02. 소화불량/만성 복통"}, {id:3, cat:"소화기", title:"03. 토혈"},
-    {id:4, cat:"소화기", title:"04. 혈변"}, {id:5, cat:"소화기", title:"05. 구토"}, {id:6, cat:"소화기", title:"06-1. 배변 이상(변비)"},
-    {id:57, cat:"소화기", title:"06-2. 배변 이상(설사)"}, {id:7, cat:"소화기", title:"07. 황달"}, {id:8, cat:"순환기", title:"08. 가슴 통증"},
-    {id:9, cat:"순환기", title:"09. 실신"}, {id:10, cat:"순환기", title:"10. 두근거림"}, {id:11, cat:"순환기", title:"11. 고혈압"},
-    {id:12, cat:"순환기", title:"12. 이상지질혈증"}, {id:13, cat:"호흡기", title:"13. 기침"}, {id:14, cat:"호흡기", title:"14. 콧물/코막힘"},
-    {id:15, cat:"호흡기", title:"15. 객혈"}, {id:16, cat:"호흡기", title:"16. 호흡곤란"}, {id:17, cat:"신장/비뇨", title:"17-1. 소변량 변화(다뇨증)"},
-    {id:58, cat:"신장/비뇨", title:"17-2. 소변량 변화(핍뇨)"}, {id:18, cat:"신장/비뇨", title:"18. 붉은색 소변"}, {id:19, cat:"신장/비뇨", title:"19-1. 배뇨 이상"},
-    {id:59, cat:"신장/비뇨", title:"19-2. 소변찔끔증"}, {id:20, cat:"전신", title:"20. 발열"}, {id:21, cat:"전신", title:"21. 쉽게 멍이 듦"},
-    {id:22, cat:"전신", title:"22. 피로"}, {id:23, cat:"전신", title:"23. 체중 감소"}, {id:24, cat:"전신", title:"24. 체중 증가/비만"},
-    {id:25, cat:"관절/근골격/피부", title:"25. 관절 통증/부기"}, {id:26, cat:"관절/근골격/피부", title:"26-1. 목 통증"}, {id:60, cat:"관절/근골격/피부", title:"26-2. 허리 통증"},
-    {id:27, cat:"관절/근골격/피부", title:"27. 피부 발진"}, {id:28, cat:"정신/신경", title:"28. 기분 변화"}, {id:29, cat:"정신/신경", title:"29. 불안"},
-    {id:30, cat:"정신/신경", title:"30. 수면장애"}, {id:31, cat:"정신/신경", title:"31. 기억력 저하"}, {id:32, cat:"정신/신경", title:"32. 어지럼"},
-    {id:33, cat:"정신/신경", title:"33. 두통"}, {id:34, cat:"정신/신경", title:"34. 경련"}, {id:35, cat:"정신/신경", title:"35. 근력/감각 이상"},
-    {id:36, cat:"정신/신경", title:"36. 의식장애"}, {id:37, cat:"정신/신경", title:"37. 떨림/운동 이상"}, {id:38, cat:"산부/여성/소아", title:"38-1. 유방통"},
-    {id:39, cat:"산부/여성/소아", title:"39-1. 질분비물"}, {id:61, cat:"산부/여성/소아", title:"39-2. 질출혈"}, {id:40, cat:"산부/여성/소아", title:"40-1. 월경 이상"},
-    {id:62, cat:"산부/여성/소아", title:"40-2. 월경통"}, {id:41, cat:"산부/여성/소아", title:"41. 산전 진찰"}, {id:42, cat:"산부/여성/소아", title:"42-1. 성장 지연"},
-    {id:63, cat:"산부/여성/소아", title:"42-2. 발달 지연"}, {id:43, cat:"산부/여성/소아", title:"43. 예방접종"}, {id:44, cat:"상담", title:"44-1. 음주 상담"},
-    {id:64, cat:"상담", title:"44-2. 금연 상담"}, {id:45, cat:"상담", title:"45. 물질 오남용"}, {id:46, cat:"상담", title:"46. 나쁜 소식 전하기"},
-    {id:47, cat:"상담", title:"47-1. 가정 폭력"}, {id:65, cat:"상담", title:"47-2. 성 폭력"}, {id:48, cat:"상담", title:"48. 자살"}, {id:66, cat:"산부/여성/소아", title:"38-2. 유방덩이"}
+    // --- [Group 1] 소화기 (8개) ---
+    {id:1, cat:"소화기", title:"01. 급성 복통", mockGroup: 1}, 
+    {id:2, cat:"소화기", title:"02. 소화불량/만성 복통", mockGroup: 1}, 
+    {id:3, cat:"소화기", title:"03. 토혈", mockGroup: 1},
+    {id:4, cat:"소화기", title:"04. 혈변", mockGroup: 1}, 
+    {id:5, cat:"소화기", title:"05. 구토", mockGroup: 1}, 
+    {id:6, cat:"소화기", title:"06-1. 배변 이상(변비)", mockGroup: 1},
+    {id:57, cat:"소화기", title:"06-2. 배변 이상(설사)", mockGroup: 1}, 
+    {id:7, cat:"소화기", title:"07. 황달", mockGroup: 1}, 
+
+    // --- [Group 2] 순환기 (5개) ---
+    {id:8, cat:"순환기", title:"08. 가슴 통증", mockGroup: 2},
+    {id:9, cat:"순환기", title:"09. 실신", mockGroup: 2}, 
+    {id:10, cat:"순환기", title:"10. 두근거림", mockGroup: 2}, 
+    {id:11, cat:"순환기", title:"11. 고혈압", mockGroup: 2},
+    {id:12, cat:"순환기", title:"12. 이상지질혈증", mockGroup: 2}, 
+
+    // --- [Group 3] 호흡기 (4개) ---
+    {id:13, cat:"호흡기", title:"13. 기침", mockGroup: 3}, 
+    {id:14, cat:"호흡기", title:"14. 콧물/코막힘", mockGroup: 3},
+    {id:15, cat:"호흡기", title:"15. 객혈", mockGroup: 3}, 
+    {id:16, cat:"호흡기", title:"16. 호흡곤란", mockGroup: 3}, 
+
+    // --- [Group 4] 신장/비뇨 + 전신 + 근골격 + 어지럼 (15개) -> 서브그룹 분리 ---
+    {id:17, cat:"신장/비뇨", title:"17-1. 소변량 변화(다뇨증)", mockGroup: 4, subGroup: 'A'},
+    {id:58, cat:"신장/비뇨", title:"17-2. 소변량 변화(핍뇨)", mockGroup: 4, subGroup: 'A'}, 
+    {id:18, cat:"신장/비뇨", title:"18. 붉은색 소변", mockGroup: 4, subGroup: 'A'}, 
+    {id:19, cat:"신장/비뇨", title:"19-1. 배뇨 이상", mockGroup: 4, subGroup: 'A'},
+    {id:59, cat:"신장/비뇨", title:"19-2. 소변찔끔증", mockGroup: 4, subGroup: 'A'}, 
+    {id:20, cat:"전신", title:"20. 발열", mockGroup: 4, subGroup: 'B'}, 
+    {id:21, cat:"전신", title:"21. 쉽게 멍이 듦", mockGroup: 4, subGroup: 'B'},
+    {id:22, cat:"전신", title:"22. 피로", mockGroup: 4, subGroup: 'B'}, 
+    {id:23, cat:"전신", title:"23. 체중 감소", mockGroup: 4, subGroup: 'B'}, 
+    {id:24, cat:"전신", title:"24. 체중 증가/비만", mockGroup: 4, subGroup: 'B'},
+    {id:25, cat:"관절/근골격/피부", title:"25. 관절 통증/부기", mockGroup: 4, subGroup: 'C'}, 
+    {id:26, cat:"관절/근골격/피부", title:"26-1. 목 통증", mockGroup: 4, subGroup: 'C'}, 
+    {id:60, cat:"관절/근골격/피부", title:"26-2. 허리 통증", mockGroup: 4, subGroup: 'C'},
+    {id:27, cat:"관절/근골격/피부", title:"27. 피부 발진", mockGroup: 4, subGroup: 'C'}, 
+    {id:32, cat:"정신/신경", title:"32. 어지럼", mockGroup: 4, subGroup: 'D'},
+
+    // --- [Group 5] 정신/상담 혼합 (5개) ---
+    {id:28, cat:"정신/신경", title:"28. 기분 변화", mockGroup: 5}, 
+    {id:29, cat:"정신/신경", title:"29. 불안", mockGroup: 5},
+    {id:30, cat:"정신/신경", title:"30. 수면장애", mockGroup: 5}, 
+    {id:45, cat:"상담", title:"45. 물질 오남용", mockGroup: 5}, 
+    {id:48, cat:"상담", title:"48. 자살", mockGroup: 5},
+
+    // --- [Group 6] 신경 (6개) ---
+    {id:31, cat:"정신/신경", title:"31. 기억력 저하", mockGroup: 6}, 
+    {id:33, cat:"정신/신경", title:"33. 두통", mockGroup: 6}, 
+    {id:34, cat:"정신/신경", title:"34. 경련", mockGroup: 6}, 
+    {id:35, cat:"정신/신경", title:"35. 근력/감각 이상", mockGroup: 6},
+    {id:36, cat:"정신/신경", title:"36. 의식장애", mockGroup: 6}, 
+    {id:37, cat:"정신/신경", title:"37. 떨림/운동 이상", mockGroup: 6}, 
+
+    // --- [Group 7] 산부인과 (7개) ---
+    {id:38, cat:"산부/여성/소아", title:"38-1. 유방통", mockGroup: 7},
+    {id:66, cat:"산부/여성/소아", title:"38-2. 유방덩이", mockGroup: 7},
+    {id:39, cat:"산부/여성/소아", title:"39-1. 질분비물", mockGroup: 7}, 
+    {id:61, cat:"산부/여성/소아", title:"39-2. 질출혈", mockGroup: 7}, 
+    {id:40, cat:"산부/여성/소아", title:"40-1. 월경 이상", mockGroup: 7},
+    {id:62, cat:"산부/여성/소아", title:"40-2. 월경통", mockGroup: 7}, 
+    {id:41, cat:"산부/여성/소아", title:"41. 산전 진찰", mockGroup: 7}, 
+
+    // --- [Group 8] 소아/예방/상담 (8개) ---
+    {id:42, cat:"산부/여성/소아", title:"42-1. 성장 지연", mockGroup: 8},
+    {id:63, cat:"산부/여성/소아", title:"42-2. 발달 지연", mockGroup: 8}, 
+    {id:43, cat:"산부/여성/소아", title:"43. 예방접종", mockGroup: 8}, 
+    {id:44, cat:"상담", title:"44-1. 음주 상담", mockGroup: 8},
+    {id:64, cat:"상담", title:"44-2. 금연 상담", mockGroup: 8}, 
+    {id:46, cat:"상담", title:"46. 나쁜 소식 전하기", mockGroup: 8}, 
+    {id:47, cat:"상담", title:"47-1. 가정 폭력", mockGroup: 8}, 
+    {id:65, cat:"상담", title:"47-2. 성 폭력", mockGroup: 8}
 ];
 
 const NAMES_L = ['김','이','박','최','정','강','조','윤','장','임'];
@@ -1212,8 +1313,15 @@ function renderOnboarding() {
         let iconHtml = '';
         if(slide.type === 'image') {
             iconHtml = `<img src="${slide.src}" style="width:6rem; height:6rem; border-radius:1.2rem; box-shadow:0 8px 16px -4px rgba(0,0,0,0.15);">`;
+        } else if (slide.type === 'header-style') {
+            // 버튼 모양처럼 예쁘게 배경색과 테두리가 들어간 형태
+            iconHtml = `
+            <div style="display:flex; align-items:center; justify-content:center; gap:0.6rem; color:${slide.color}; font-size:2rem; font-weight:900; background:#eff6ff; padding:1.2rem 2rem; border-radius:16px; border: 2px solid #bfdbfe; margin-bottom: 1rem;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:2.5rem; height:2.5rem;">${slide.iconPath}</svg>
+                <span>${slide.text}</span>
+            </div>`;
         } else {
-            iconHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="${slide.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:5rem; height:5rem;">${slide.path}</svg>`;
+            iconHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="${slide.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:5rem; height:5rem; margin-bottom: 1.5rem;">${slide.path}</svg>`;
         }
 
         div.innerHTML = `
@@ -1302,9 +1410,19 @@ function renderCard() {
     const wrapper = document.getElementById('card-wrapper'); const emptyState = document.getElementById('empty-state');
     const navRow = document.getElementById('front-nav'); const ansBtns = document.getElementById('answer-btns'); const reviewNav = document.getElementById('review-nav');
     wrapper.classList.remove('shaking');
+    
     if(studyDeck.length === 0 || currentIndex >= studyDeck.length) {
-        if(currentMode === 'mock') { showMockResult(); } else { wrapper.style.display = 'none'; document.querySelector('.controls').style.display = 'none'; emptyState.style.display = 'block'; stopTimer(); } return;
+        if(currentMode === 'mock') { 
+            showMockResult(); 
+        } else if (currentMode === 'practical') { 
+            // ★ 피드백 5: 실전 모드 세트 종료 시 처리
+            finishPracticalSet();
+        } else { 
+            wrapper.style.display = 'none'; document.querySelector('.controls').style.display = 'none'; emptyState.style.display = 'block'; stopTimer(); 
+        } 
+        return;
     }
+    
     wrapper.style.display = 'block'; document.querySelector('.controls').style.display = 'block'; emptyState.style.display = 'none'; wrapper.classList.remove('flipped');
     navRow.style.display = 'none'; ansBtns.style.display = 'none'; reviewNav.style.display = 'none';
     if(currentMode === 'review') reviewNav.style.display = 'grid'; else navRow.style.display = 'flex';
@@ -1329,9 +1447,18 @@ function flipCard(isBack) {
     else { wrapper.classList.remove('flipped'); startTimer(); if(currentMode !== 'review') { frontNav.style.display = 'flex'; ansBtns.style.display = 'none'; } }
 }
 function handleAnswer(isCorrect) {
-    const cId = studyDeck[currentIndex].id; if(!userData[cId]) userData[cId] = {};
+    const cId = studyDeck[currentIndex].id; 
+    if(!userData[cId]) userData[cId] = {};
     if(isCorrect) userData[cId].o = (userData[cId].o || 0) + 1; else userData[cId].x = (userData[cId].x || 0) + 1;
-    saveUserData(); if(currentMode === 'mock') mockResults.push({ id: cId, result: isCorrect });
+    saveUserData(); 
+    
+    if(currentMode === 'mock') {
+        mockResults.push({ id: cId, result: isCorrect });
+    } else if(currentMode === 'practical') {
+        generatedSets[currentPracticalSetIndex].results[cId] = isCorrect;
+        savePracticalState(); // 피드백 1: 결과 기록할 때마다 로컬 스토리지에 저장
+    }
+    
     currentIndex++; renderCard();
 }
 function prevCard() { if(currentIndex>0) { currentIndex--; renderCard(); } else showToast("첫 번째 카드입니다."); }
@@ -1350,29 +1477,27 @@ function switchMode(mode) {
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); 
     document.querySelectorAll('.header-btn').forEach(el => el.classList.remove('active'));
     
+    // 이사 간 컨트롤 버튼들 숨기기 제어
     const btnReset = document.getElementById('btn-reset'); 
     const btnShuffle = document.getElementById('btn-shuffle');
+    if(btnReset) btnReset.style.display = 'none';
+    if(btnShuffle) btnShuffle.style.display = 'none';
     
     if(mode === 'study') { 
         document.getElementById('study-view').classList.add('active'); 
         document.getElementById('btn-mode-study').classList.add('active'); 
-        btnReset.style.display = 'flex'; 
-        btnShuffle.style.display = 'flex'; 
+        if(btnReset) btnReset.style.display = 'flex'; 
+        if(btnShuffle) btnShuffle.style.display = 'flex'; 
         if(studyDeck.length > 0) renderCard(); 
     }
     else if (mode === 'manager') { 
         document.getElementById('manager-view').classList.add('active'); 
         document.getElementById('btn-mode-list').classList.add('active'); 
-        btnReset.style.display = 'none'; 
-        btnShuffle.style.display = 'none'; 
         stopTimer(); 
         renderManager(); 
     }
     else if (mode.startsWith('mock')) { 
         document.getElementById('btn-mode-mock').classList.add('active'); 
-        btnReset.style.display = 'none'; 
-        btnShuffle.style.display = 'none';
-        
         if(mode === 'mock-setup') { 
             document.getElementById('mock-setup-view').classList.add('active'); 
             renderMockTree(); 
@@ -1380,6 +1505,15 @@ function switchMode(mode) {
             document.getElementById('mock-result-view').classList.add('active'); 
         } 
         stopTimer();
+    }
+    // ★ 실전 모드 연결 추가 ★
+    else if (mode === 'practical') {
+        document.getElementById('practical-view').classList.add('active');
+        document.getElementById('btn-mode-practical').classList.add('active');
+        stopTimer();
+        // 피드백 1: 실전 모드 진입 시 기존 데이터 화면에 렌더링
+        setPracticalMode(currentPracticalMode, true); 
+        if (generatedSets.length > 0) renderPracticalSets();
     }
 }
 /* ▼▼▼ [최종] 계통별 초기화 버튼 + 개별 초기화 버튼 + 카운트 적용 ▼▼▼ */
@@ -1926,11 +2060,249 @@ function navToStudy() {
         switchMode('study');
     }
 }
-	
+// --- ★ 실전 모드 (스케줄러) 전용 로직 ★ ---
+let currentPracticalMode = 'review'; 
+let generatedSets = [];
+let currentPracticalSetIndex = 0; 
+
+// 피드백 1: 실전 모드 상태 저장 및 불러오기 (앱 껐다 켜도 유지)
+function savePracticalState() {
+    const state = { mode: currentPracticalMode, sets: generatedSets };
+    localStorage.setItem('cpx_v38_practical_state', JSON.stringify(state));
+}
+
+function loadPracticalState() {
+    const saved = localStorage.getItem('cpx_v38_practical_state');
+    if (saved) {
+        const state = JSON.parse(saved);
+        currentPracticalMode = state.mode || 'review';
+        generatedSets = state.sets || [];
+    }
+}
+// 자바스크립트가 실행될 때 저장된 세트를 바로 불러옴
+loadPracticalState();
+
+const EXCLUSION_PAIRS = [[6,57], [17,58], [19,59], [26,60], [38,66], [39,61], [40,62], [42,63]];
+
+function areSiblings(id1, id2) {
+    return EXCLUSION_PAIRS.some(pair => pair.includes(id1) && pair.includes(id2));
+}
+
+function updatePracticalCalc() {
+    const val = parseInt(document.getElementById('practical-num').value) || 10;
+    const sets = Math.floor(58 / val);
+    const rem = 58 % val;
+    document.getElementById('practical-calc-text').innerText = rem > 0 ? `${sets}세트 + 나머지(${rem}문제)` : `${sets}세트 (나머지 없음)`;
+}
+
+function setPracticalMode(mode, force = false) {
+    // 피드백 2: 모드 전환 시 기존 세트가 날아가는 것을 방지하는 경고 팝업
+    if (!force && currentPracticalMode !== mode && generatedSets.length > 0) {
+        if(!confirm("기존에 생성한 스케줄 세트가 사라집니다. 계속 하시겠습니까?")) return;
+        generatedSets = []; // 승인하면 초기화
+        savePracticalState();
+        renderPracticalSets();
+    }
+
+    currentPracticalMode = mode;
+    const btnReview = document.getElementById('btn-mode-review');
+    const btnFinal = document.getElementById('btn-mode-final');
+    const desc = document.getElementById('practical-desc');
+    const setupArea = document.getElementById('review-setup-area');
+
+    if(mode === 'review') {
+        btnReview.style.background = '#334155'; btnReview.style.color = 'white';
+        btnFinal.style.background = '#f1f5f9'; btnFinal.style.color = '#475569';
+        desc.innerText = "계통별 골고루 출제되는 규칙이 깨지더라도 전체 58개 증례의 빠른 1회독에 집중된 모드입니다.";
+        setupArea.style.display = 'flex';
+        updatePracticalCalc();
+    } else {
+        btnFinal.style.background = '#334155'; btnFinal.style.color = 'white';
+        btnReview.style.background = '#f1f5f9'; btnReview.style.color = '#475569';
+        desc.innerText = "실제 국시 출제경향을 엄격하게 맞추어 9문제 × 8세트가 생성됩니다. (주소 수가 적은 계통은 중복 출제가 가능합니다)";
+        setupArea.style.display = 'none';
+    }
+    // 세트가 있을 때만 목록 창을 보여줌
+    document.getElementById('practical-sets-container').style.display = generatedSets.length > 0 ? 'flex' : 'none';
+}
+
+function generatePracticalSets() {
+    generatedSets = [];
+    
+    if(currentPracticalMode === 'review') {
+        let perSet = parseInt(document.getElementById('practical-num').value) || 10;
+        let pool = [...TOPICS].sort(() => Math.random() - 0.5);
+        
+        let currentSet = [];
+        while(pool.length > 0) {
+            let safeIdx = pool.findIndex(c => !currentSet.some(existing => areSiblings(c.id, existing.id)));
+            if (safeIdx !== -1) {
+                currentSet.push(pool.splice(safeIdx, 1)[0]);
+            } else {
+                currentSet.push(pool.splice(0, 1)[0]);
+            }
+            if(currentSet.length === perSet || pool.length === 0) {
+                generatedSets.push({ cards: currentSet, isCompleted: false, results: {} });
+                currentSet = [];
+            }
+        }
+    } else {
+        let available = JSON.parse(JSON.stringify(TOPICS)); 
+        
+        for(let i=0; i<8; i++) {
+            let currentSet = [];
+            
+            const pullOne = (gId) => {
+                let cands = available.filter(c => c.mockGroup === gId);
+                if(cands.length === 0) cands = TOPICS.filter(c => c.mockGroup === gId); 
+                let picked = cands[Math.floor(Math.random() * cands.length)];
+                available = available.filter(c => c.id !== picked.id); 
+                currentSet.push(picked);
+            };
+
+            const pullTwoFromG4 = () => {
+                let cands = available.filter(c => c.mockGroup === 4);
+                if(cands.length < 2) cands = TOPICS.filter(c => c.mockGroup === 4);
+                
+                let subGroups = [...new Set(cands.map(c => c.subGroup))].sort(()=>Math.random()-0.5);
+                if(subGroups.length < 2) subGroups = ['A','B','C','D'].sort(()=>Math.random()-0.5); 
+
+                let p1 = cands.find(c => c.subGroup === subGroups[0]);
+                let p2 = cands.find(c => c.subGroup === subGroups[1]);
+                
+                if(!p1) p1 = TOPICS.find(c => c.mockGroup===4 && c.subGroup===subGroups[0]);
+                if(!p2) p2 = TOPICS.find(c => c.mockGroup===4 && c.subGroup===subGroups[1]);
+
+                available = available.filter(c => c.id !== p1.id && c.id !== p2.id);
+                currentSet.push(p1, p2);
+            };
+
+            pullOne(1); pullOne(2); pullOne(3);
+            pullTwoFromG4(); 
+            pullOne(5); pullOne(6); pullOne(7); pullOne(8);
+
+            generatedSets.push({ cards: currentSet, isCompleted: false, results: {} });
+        }
+    }
+    
+    savePracticalState(); // 생성 시 즉시 로컬 스토리지에 저장
+    renderPracticalSets();
+    showToast("스케줄 생성이 완료되었습니다!");
+}
+
+function renderPracticalSets() {
+    const container = document.getElementById('practical-sets-container');
+    const renderArea = document.getElementById('sets-render-area');
+    
+    if (generatedSets.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    container.style.display = 'flex';
+    renderArea.innerHTML = '';
+
+    generatedSets.forEach((setObj, index) => {
+        const setDiv = document.createElement('div');
+        setDiv.style.background = 'white';
+        setDiv.style.borderRadius = '12px';
+        setDiv.style.border = '1px solid #e2e8f0';
+        setDiv.style.overflow = 'hidden';
+
+        const titleText = currentPracticalMode === 'review' 
+            ? `${index + 1}세트 풀기 (${setObj.cards.length}문제)` 
+            : `파이날 ${index + 1}회 풀기`;
+            
+        const btnStyle = setObj.isCompleted 
+            ? "flex:1; background:#e2e8f0; color:#475569; font-size:1rem; padding:1rem; border-radius:0; justify-content:flex-start; font-weight:800;" 
+            : "flex:1; background:var(--primary-color); color:white; font-size:1rem; padding:1rem; border-radius:0; justify-content:flex-start; font-weight:800;";
+
+        setDiv.innerHTML = `
+            <div style="display:flex; border-bottom:1px solid #f1f5f9;">
+                <button class="btn" style="${btnStyle}" onclick="startPracticalStudy(${index})">
+                    ${setObj.isCompleted ? '✅ 완료: ' : '▶️ '}${titleText}
+                </button>
+                <button class="btn" style="width:60px; background:#f8fafc; color:#2563eb; border-left:1px solid #e2e8f0; border-radius:0; font-size:0.85rem;" onclick="toggleBlind(${index})">
+                    보기▼
+                </button>
+            </div>
+            <div id="blind-content-${index}" style="display:none; padding:1rem; flex-direction:column; gap:0.5rem; background:#fff;">
+                ${setObj.cards.map((c, i) => {
+                    let resBadge = '';
+                    if(setObj.isCompleted && setObj.results.hasOwnProperty(c.id)) {
+                        const isO = setObj.results[c.id];
+                        resBadge = `<span style="padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:800; margin-right:6px; background:${isO?'#dcfce7':'#fee2e2'}; color:${isO?'#166534':'#b91c1c'};">${isO?'O':'X'}</span>`;
+                    }
+                    return `<div style="font-size:0.95rem; color:#475569; display:flex; align-items:center;">${resBadge}${i+1}. ${c.title}</div>`;
+                }).join('')}
+            </div>
+        `;
+        renderArea.appendChild(setDiv);
+    });
+}
+
+function toggleBlind(index) {
+    const content = document.getElementById(`blind-content-${index}`);
+    content.style.display = content.style.display === 'none' ? 'flex' : 'none';
+}
+
+function copyScheduleToClipboard() {
+    if(generatedSets.length === 0) return;
+    let txt = `[1분 CPX 스터디 일정표]\n모드: ${currentPracticalMode === 'review' ? '회독 스케줄러' : '파이날 모의고사 (국시 동기화)'}\n\n`;
+    
+    generatedSets.forEach((setObj, i) => {
+        txt += `🔥 ${i+1}세트 (${setObj.cards.length}문제)\n`;
+        setObj.cards.forEach((c, j) => {
+            txt += `  ${j+1}) ${c.title}\n`; 
+        });
+        txt += `\n`;
+    });
+
+    navigator.clipboard.writeText(txt).then(() => {
+        alert("✅ 일정표가 클립보드에 복사되었습니다!\n조 카톡방에 바로 붙여넣기 하세요.");
+    }).catch(err => {
+        alert("복사 실패. 브라우저 설정을 확인해주세요.");
+    });
+}
+
+function startPracticalStudy(setIndex) {
+    // 피드백 3: 이미 푼 세트를 누르면 다시 풀 건지 확인 팝업
+    if (generatedSets[setIndex].isCompleted) {
+        if(!confirm("이전에 풀었던 세트입니다. 결과를 초기화하고 다시 푸시겠습니까?")) return;
+    }
+    
+    currentPracticalSetIndex = setIndex;
+    currentMode = 'practical';
+    studyDeck = generatedSets[setIndex].cards;
+    currentIndex = 0;
+    
+    generatedSets[setIndex].results = {};
+    generatedSets[setIndex].isCompleted = false;
+    
+    savePracticalState(); 
+
+    switchMode('study');
+    renderCard();
+    showToast(`${setIndex + 1}세트 학습을 시작합니다!`);
+}
+
+function finishPracticalSet() {
+    generatedSets[currentPracticalSetIndex].isCompleted = true;
+    savePracticalState(); // 세트 종료 시 상태 저장
+    
+    switchMode('practical');
+    renderPracticalSets();
+    
+    document.getElementById(`blind-content-${currentPracticalSetIndex}`).style.display = 'flex';
+    showToast("수고하셨습니다! 결과를 확인하세요.");
+}
+
+setTimeout(updatePracticalCalc, 500);	
 init();
 </script>
 </body>
 </html>
+
 
 
 
