@@ -19,7 +19,7 @@
     <meta property="og:title" content="1분 CPX - 실기시험 순발력 훈련">
     <meta property="og:description" content="C.C를 보고 1분 안에 연상하는 실전 감각 연습. 제작: KNU FM JSW">
 
-    <title>1분 CPX v2.1</title>
+    <title>1분 CPX v2.2</title>
     
     
     <link rel="apple-touch-icon" href="icon.PNG">
@@ -578,7 +578,14 @@
         }
 /* 툴바 버튼 찌그러짐 방지 코드 (필수) */
         .editor-toolbar > * { flex-shrink: 0; }
-    </style>
+/* ⚙️ 환경설정 토글(아코디언) UI 스타일 */
+        .settings-details { background:white; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:0.8rem; overflow:hidden; }
+        .settings-details summary { padding:1rem 1.2rem; font-weight:800; color:#1e293b; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; }
+        .settings-details summary::-webkit-details-marker { display:none; }
+        .settings-details summary::after { content:'▼'; font-size:0.8rem; color:#94a3b8; transition:0.2s; }
+        .settings-details[open] summary::after { content:'▲'; color:#2563eb; }
+        .details-content { padding: 0 1.2rem 1.2rem 1.2rem; border-top:1px solid #f1f5f9; margin-top:0.2rem; padding-top:1rem; }
+	</style>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -592,7 +599,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <img src="icon.PNG" style="width:2.2rem; height:2.2rem; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
                 <div style="display:flex; flex-direction:column; justify-content:center;">
                     <span class="main-title">1분 CPX</span>
-                    <span class="sub-title">v2.1</span>
+                    <span class="sub-title">v2.2</span>
                 </div>
             </div>
 
@@ -749,7 +756,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div style="margin-right:auto; font-size:0.95rem; font-weight:700; color:#475569;">
                 학습할 주제 선택 <span id="manager-scope-count" style="color:#2563eb; font-weight:900;">(0 / 0)</span>
             </div>
-            <button class="btn" style="width:auto; padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="showOnboarding(true)">
+            <button class="btn" style="width:auto; padding:0.4rem 0.8rem; font-size:0.85rem; background:#f8fafc; color:#2563eb; border:1px solid #bfdbfe;" onclick="showOnboarding(true)">
                 💡 도움말
             </button>
             <button class="btn" style="width:auto; padding:0.4rem 0.8rem; font-size:0.85rem;" id="btn-toggle-all" onclick="toggleAllCards()">
@@ -758,44 +765,100 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <div class="list-container" id="list-container"></div>      
 
-        <div class="controls" style="background:white; display:block; padding:0; border-top:1px solid #e2e8f0;">
-            <details style="width:100%;">
-                <summary style="padding:1rem; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#475569; background:#f8fafc;">
-                    <span>⚙️ 데이터 관리 / 백업 설정</span>
-                    <span style="font-size:0.8rem; color:#94a3b8;">▼</span>
-                </summary>
-                
-                <div style="padding:1rem; background:white; border-top:1px solid #f1f5f9;">
-                    
-                    <div style="font-size:0.85rem; font-weight:700; color:#64748b; margin-bottom:0.5rem;">📤 내보내기 (데이터 백업)</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem; margin-bottom:1.5rem;">
-                        <button class="btn btn-blue-outline" onclick="exportDataToClipboard()" style="font-size:0.9rem; padding:0.8rem; color:#64748b; border-color:#cbd5e1;">
-                            📝 텍스트 복사
-                        </button>
-                        <button class="btn" onclick="exportDataToFile()" style="font-size:0.9rem; padding:0.8rem; background:#2563eb; color:white;">
-                            💾 파일 다운로드 (권장)
-                        </button>
-                    </div>
-                    
-                    <div style="font-size:0.85rem; font-weight:700; color:#64748b; margin-bottom:0.5rem;">📥 가져오기 (데이터 복원)</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem; margin-bottom:1rem;">
-                        <button class="btn btn-blue-outline" onclick="importDataFromClipboard()" style="font-size:0.9rem; padding:0.8rem; color:#64748b; border-color:#cbd5e1;">
-                            📋 붙여넣기
-                        </button>
-                        <button class="btn btn-blue-outline" onclick="document.getElementById('file-import-input').click()" style="font-size:0.9rem; padding:0.8rem;">
-                            📂 파일 불러오기
-                        </button>
-                        <input type="file" id="file-import-input" accept=".json,.txt" style="display:none;" onchange="importDataFromFile(event)">
-                    </div>
-
-                    <div style="margin-top:1.5rem; border-top:1px solid #f1f5f9; padding-top:1rem;">
-                        <button class="btn btn-reset-outline" style="width:100%; padding:0.8rem;" onclick="resetData()">
-                            🗑️ 데이터 초기화
-                        </button>
-                    </div>
-                </div>
-            </details>
+        <div class="controls" style="background:white; display:block; padding:1rem; border-top:1px solid #e2e8f0;">
+            <button class="btn" style="width:100%; background:#f1f5f9; color:#475569; font-size:1rem; padding:0.8rem;" onclick="openSettingsModal()">
+                ⚙️ 환경설정 (데이터 백업 및 카드 순서 변경)
+            </button>
         </div>
+    </div>
+	<div class="modal-overlay" id="settings-modal" style="z-index: 900;">
+        <div class="modal-content" style="height:auto; max-height:85%; background:#f8fafc;">
+            <div style="padding:1rem 1.5rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:white;">
+                <span style="font-weight:900; font-size:1.1rem;">⚙️ 환경 설정</span>
+                <button onclick="closeSettingsModal()" style="font-size:1.5rem; background:none; border:none; color:#94a3b8;">&times;</button>
+            </div>
+            
+            <div style="padding:1rem; overflow-y:auto; display:flex; flex-direction:column;">
+                
+                <details class="settings-details">
+                    <summary>⏱️ 기본 타이머 설정</summary>
+                    <div class="details-content">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem;">
+                            <button class="btn btn-blue-outline timer-setting-btn" id="ts-1min" style="font-size:0.85rem; padding:0.6rem;" onclick="setTimerOption('1min')">60초 연습</button>
+                            <button class="btn btn-blue-outline timer-setting-btn" id="ts-unlimited" style="font-size:0.85rem; padding:0.6rem;" onclick="setTimerOption('unlimited')">무제한</button>
+                            <button class="btn btn-blue-outline timer-setting-btn" id="ts-custom" style="font-size:0.85rem; padding:0.6rem;" onclick="setTimerOption('custom')">직접 입력</button>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="settings-details">
+                    <summary>🔄 카드 뒷면 표시 순서 설정</summary>
+                    <div class="details-content">
+                        <div style="font-size:0.85rem; color:#64748b; margin-bottom:1rem; line-height:1.4;">
+                            아래 칩을 원하는 순서대로 터치하여 디폴트 순서를 정한 후, 전체 카드에 적용하세요.
+                        </div>
+                        <div class="chip-container" style="padding:0 0 0.8rem 0; justify-content:center;">
+                            <div class="field-chip active" onclick="toggleSettingsField(this, 'C')">C</div>
+                            <div class="field-chip active" onclick="toggleSettingsField(this, 'A')">A</div>
+                            <div class="field-chip active" onclick="toggleSettingsField(this, 'F')">F</div>
+                            <div class="field-chip active" onclick="toggleSettingsField(this, 'PEx')">PEx</div>
+                            <div class="field-chip active" onclick="toggleSettingsField(this, 'Edu')">Edu</div>
+                            <div class="field-chip active" onclick="toggleSettingsField(this, 'Memo')">Memo</div>
+                        </div>
+                        
+                        <div id="order-preview-text" style="text-align:center; font-weight:800; color:#2563eb; font-size:0.9rem; margin-bottom:1rem; background:#eff6ff; padding:0.6rem; border-radius:8px; border:1px dashed #bfdbfe;">
+                            표기 순서 : C ➔ A ➔ F ➔ PEx ➔ Edu ➔ Memo
+                        </div>
+
+                        <button class="btn btn-blue-outline" style="width:100%; font-size:0.95rem; padding:0.8rem; color:#ef4444;" onclick="applyGlobalOrderFromSettings()">
+                            위 순서를 전체 카드에 적용
+                        </button>
+                    </div>
+                </details>
+
+                <details class="settings-details">
+                    <summary>💾 데이터 가져오기 / 내보내기</summary>
+                    <div class="details-content">
+                        <div style="font-size:0.85rem; font-weight:700; color:#64748b; margin-bottom:0.5rem;">📤 내보내기 (데이터 백업)</div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem; margin-bottom:1.5rem;">
+                            <button class="btn btn-blue-outline" onclick="exportDataToClipboard()" style="font-size:0.85rem; padding:0.6rem; color:#64748b;">📝 텍스트 복사</button>
+                            <button class="btn" onclick="exportDataToFile()" style="font-size:0.85rem; padding:0.6rem; background:#2563eb; color:white;">💾 파일 다운로드(권장)</button>
+                        </div>
+                        
+                        <div style="font-size:0.85rem; font-weight:700; color:#64748b; margin-bottom:0.5rem;">📥 가져오기 (데이터 복원)</div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem;">
+                            <button class="btn btn-blue-outline" onclick="importDataFromClipboard()" style="font-size:0.85rem; padding:0.6rem; color:#64748b;">📋 텍스트 붙여넣기</button>
+                            <button class="btn btn-blue-outline" onclick="document.getElementById('file-import-input').click()" style="font-size:0.85rem; padding:0.6rem; color:#64748b;">📂 파일 불러오기</button>
+                            <input type="file" id="file-import-input" accept=".json,.txt" style="display:none;" onchange="importDataFromFile(event)">
+                        </div>
+                    </div>
+                </details>
+
+                <details class="settings-details">
+                    <summary>🗑️ 데이터 및 기록 초기화</summary>
+                    <div class="details-content">
+                        <div style="display:flex; flex-direction:column; gap:0.6rem;">
+                            <button class="btn btn-blue-outline" style="width:100%; padding:0.8rem; color:#ea580c;" onclick="resetAllTrafficLights()">
+                                🚦 약점기록 전체 초기화
+                            </button>
+                            <button class="btn btn-blue-outline" style="width:100%; padding:0.8rem; color:#2563eb;" onclick="resetAllStudyRecords()">
+                                📊 정답률기록 전체 초기화
+                            </button>
+                            <button class="btn btn-blue-outline" style="width:100%; padding:0.8rem; color:#dc2626;" onclick="resetData()">
+                                ⚠️ 카드 전체 데이터 초기화(주의!)
+                            </button>
+                        </div>
+                    </div>
+                </details>
+
+                <div style="text-align:center; padding:1rem 0;">
+                    <a href="https://github.com/1min-cpx/1min-cpx.github.io/blob/main/README.md" target="_blank" style="color:#94a3b8; font-size:0.85rem; font-weight:600; text-decoration:underline;">
+                        📖 상세 활용법(Readme) 보기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
     <div class="toast-container"><div id="toast" class="toast">메시지</div></div>
     <div class="modal-overlay" id="input-modal">
@@ -1433,9 +1496,25 @@ function renderCard() {
 }
 function renderBack(card, targetId) {
     const container = document.getElementById(targetId); const uData = userData[card.id] || {}; const activeFields = uData.activeFields || ALL_FIELDS; let formHtml = '';
+    
+    const colorMap = ['var(--primary-color)', '#ca8a04', '#ea580c', '#dc2626'];
+    const circleMap = ['', '🟡 ', '🟠 ', '🔴 '];
+
     activeFields.forEach(code => {
         const key = uData[code+'_k'] || ''; const val = uData[code+'_v'] || '';
-        formHtml += `<div class="field-group"><div class="field-header" onclick="toggleExpl(this)"><div class="field-label">${code}</div><div class="field-key ${!key ? 'empty' : ''}">${key || '(내용을 입력하세요...)'}</div></div><div class="explanation-box" onclick="openModal('${code}')">${val || '<span style="color:#cbd5e1">(해설을 입력하려면 여기를 누르세요)</span>'}</div></div>`;
+        const weakLvl = uData[code+'_w'] || 0;
+
+        formHtml += `<div class="field-group">
+            <div class="field-header" style="padding: 0.5rem 0; display:flex; align-items:flex-start;">
+                <div class="field-label" style="width:60px; font-size:0.95rem; font-weight:900; color:${colorMap[weakLvl]}; cursor:pointer;" onclick="toggleTrafficLight(${card.id}, '${code}')">
+                    ${circleMap[weakLvl]}${code}
+                </div>
+                <div class="field-key ${!key ? 'empty' : ''}" style="flex:1; cursor:pointer;" onclick="toggleExpl(this.parentElement)">
+                    ${key || '(내용을 입력하세요...)'}
+                </div>
+            </div>
+            <div class="explanation-box" onclick="openModal('${code}')">${val || '<span style="color:#cbd5e1">(해설을 입력하려면 여기를 누르세요)</span>'}</div>
+        </div>`;
     });
     if(activeFields.length === 0) formHtml = '<div style="padding:1rem; color:#94a3b8; text-align:center;">선택된 양식이 없습니다.<br>편집에서 칩을 선택해주세요.</div>';
     container.innerHTML = formHtml;
@@ -1573,6 +1652,16 @@ function renderManager() {
                 let badgeClass = 'score-gray'; 
                 if(total > 0) { const rate = (u.o||0) / total; if(rate >= 0.8) badgeClass = 'score-green'; else if(rate >= 0.5) badgeClass = 'score-yellow'; else badgeClass = 'score-red'; } 
                 const badgeText = total > 0 ? total : '-'; 
+                // 신호등 미니 알파벳 생성
+                const activeFields = u.activeFields || ALL_FIELDS;
+                let weakHtml = '<div style="display:flex; gap:3px; margin-right:8px;">';
+                activeFields.forEach(code => {
+                    let w = u[code+'_w'] || 0;
+                    if(w===1) weakHtml += `<span style="font-size:0.75rem;">🟡${code.charAt(0)}</span>`;
+                    if(w===2) weakHtml += `<span style="font-size:0.75rem;">🟠${code.charAt(0)}</span>`;
+                    if(w===3) weakHtml += `<span style="font-size:0.75rem;">🔴${code.charAt(0)}</span>`;
+                });
+                weakHtml += '</div>';
                 
                 return `
                 <div class="list-item ${!c.isVisible ? 'hidden' : ''}">
@@ -1581,6 +1670,7 @@ function renderManager() {
                     </div>
                     
                     <div class="item-right">
+                        ${weakHtml}
                         <span class="score-badge ${badgeClass}" onclick="event.stopPropagation(); showScoreDetail(${c.id})">${badgeText}</span>
                         
                         <div class="list-actions">
@@ -1700,8 +1790,25 @@ function retryWrongAnswers() {
 function reviewMockCard(id) { const c = cards.find(x => x.id === id); currentMode = 'review'; studyDeck = [c]; currentIndex = 0; switchMode('study'); renderCard(); }
 function returnToResults() { switchMode('mock-result'); }
 function openManagerCardPreview(id) { editTargetId = id; const card = cards.find(c => c.id === id); document.getElementById('manager-preview-title').innerText = card.title; const uData = userData[id] || {}; const active = uData.activeFields || ALL_FIELDS; document.querySelectorAll('.field-chip').forEach(chip => chip.classList.toggle('active', active.includes(chip.innerText))); renderBack(card, 'manager-preview-form'); document.getElementById('manager-preview-modal').classList.add('open'); checkEditHelp(); }
-function toggleField(chip, code) { chip.classList.toggle('active'); const uData = userData[editTargetId] || {}; let active = uData.activeFields || [...ALL_FIELDS]; if(chip.classList.contains('active')) { if(!active.includes(code)) active.push(code); } else { active = active.filter(x => x !== code); } active.sort((a,b) => ALL_FIELDS.indexOf(a) - ALL_FIELDS.indexOf(b)); if(!userData[editTargetId]) userData[editTargetId] = {}; userData[editTargetId].activeFields = active; saveUserData(); renderBack(cards.find(c => c.id === editTargetId), 'manager-preview-form'); }
-function openModal(code) { const isManager = document.getElementById('manager-preview-modal').classList.contains('open'); if(!isManager) editTargetId = studyDeck[currentIndex].id; const uData = userData[editTargetId] || {}; document.getElementById('modal-field-key').value = code; document.getElementById('modal-editor-key').innerHTML = uData[code+'_k'] || ''; document.getElementById('modal-editor-val').innerHTML = uData[code+'_v'] || ''; document.getElementById('input-modal').classList.add('open'); }
+function toggleField(chip, code) { 
+    chip.classList.toggle('active'); 
+    const uData = userData[editTargetId] || {}; 
+    let active = uData.activeFields || [...ALL_FIELDS]; 
+    
+    if(chip.classList.contains('active')) { 
+        if(!active.includes(code)) active.push(code); 
+    } else { 
+        active = active.filter(x => x !== code); 
+    } 
+    
+    // 👇 바로 이 부분입니다! 앞에 // 를 붙여서 원래 있던 강제 정렬 기능을 꺼버렸습니다.
+    // active.sort((a,b) => ALL_FIELDS.indexOf(a) - ALL_FIELDS.indexOf(b)); 
+    
+    if(!userData[editTargetId]) userData[editTargetId] = {}; 
+    userData[editTargetId].activeFields = active; 
+    saveUserData(); 
+    renderBack(cards.find(c => c.id === editTargetId), 'manager-preview-form'); 
+}function openModal(code) { const isManager = document.getElementById('manager-preview-modal').classList.contains('open'); if(!isManager) editTargetId = studyDeck[currentIndex].id; const uData = userData[editTargetId] || {}; document.getElementById('modal-field-key').value = code; document.getElementById('modal-editor-key').innerHTML = uData[code+'_k'] || ''; document.getElementById('modal-editor-val').innerHTML = uData[code+'_v'] || ''; document.getElementById('input-modal').classList.add('open'); }
 function closeModal() { document.getElementById('input-modal').classList.remove('open'); }
 function execCmd(cmd) { document.execCommand(cmd, false, null); }
 function execColor(color) { document.execCommand('foreColor', false, color); }
@@ -1837,6 +1944,7 @@ async function exportDataToClipboard() {
         cards: cards,
         userData: userData,
         cats: collapsedCategories,
+        practicalState: { mode: currentPracticalMode, sets: generatedSets }, // 이 줄 추가됨
         date: new Date().toLocaleString()
     };
 
@@ -1878,6 +1986,7 @@ function exportDataToFile() {
         cards: cards,
         userData: userData,
         cats: collapsedCategories,
+        practicalState: { mode: currentPracticalMode, sets: generatedSets }, // 이 줄 추가됨
         date: new Date().toLocaleString()
     };
     const jsonString = JSON.stringify(backupData);
@@ -1944,7 +2053,12 @@ function processDataRestoration(jsonString) {
             saveCards();
             saveUserData();
             saveCats();
-            alert("✅ 복원이 완료되었습니다.");
+            if (data.practicalState) {
+                currentPracticalMode = data.practicalState.mode || 'review';
+                generatedSets = data.practicalState.sets || [];
+                savePracticalState();
+            }
+			alert("✅ 복원이 완료되었습니다.");
             location.reload();
         }
     } catch (e) {
@@ -2141,6 +2255,8 @@ function generatePracticalSets() {
                 currentSet.push(pool.splice(0, 1)[0]);
             }
             if(currentSet.length === perSet || pool.length === 0) {
+                // 세트 내 문제 순서 완전 랜덤 뒤섞기
+                currentSet.sort(() => Math.random() - 0.5);
                 generatedSets.push({ cards: currentSet, isCompleted: false, results: {} });
                 currentSet = [];
             }
@@ -2179,8 +2295,9 @@ function generatePracticalSets() {
             pullOne(1); pullOne(2); pullOne(3);
             pullTwoFromG4(); 
             pullOne(5); pullOne(6); pullOne(7); pullOne(8);
-
-            generatedSets.push({ cards: currentSet, isCompleted: false, results: {} });
+				// 세트 내 문제 순서 완전 랜덤 뒤섞기
+                currentSet.sort(() => Math.random() - 0.5);
+                generatedSets.push({ cards: currentSet, isCompleted: false, results: {} });
         }
     }
     
@@ -2298,7 +2415,7 @@ function finishPracticalSet() {
 // [시스템 최적화] 안드로이드 뒤로가기 & PC ESC 키 방어 로직
 window.addEventListener('popstate', function() {
     // 앱 내의 모든 모달(팝업창) 목록
-    const modals = ['input-modal', 'manager-preview-modal', 'score-modal', 'timer-modal', 'onboarding-modal'];
+    const modals = ['settings-modal','input-modal', 'manager-preview-modal', 'score-modal', 'timer-modal', 'onboarding-modal'];
     
     // 스마트폰 뒤로가기를 눌렀을 때, 열려있는 모달이 있으면 앱을 끄는 대신 모달만 닫음
     for (let id of modals) {
@@ -2312,7 +2429,7 @@ window.addEventListener('popstate', function() {
 
 document.addEventListener('keydown', function(e) {
     if (e.key === "Escape") {
-        const modals = ['input-modal', 'manager-preview-modal', 'score-modal', 'timer-modal', 'onboarding-modal'];
+        const modals = ['settings-modal','input-modal', 'manager-preview-modal', 'score-modal', 'timer-modal', 'onboarding-modal'];
         for (let id of modals) {
             const modal = document.getElementById(id);
             if (modal && modal.classList.contains('open')) {
@@ -2342,11 +2459,161 @@ showScoreDetail = function(id) {
     history.pushState(null, null, '#score'); // 가짜 기록 추가
     originalShowScoreDetail(id);
 };
+// 환경설정 창 열 때도 가짜 기록 추가
+const originalOpenSettingsModal = openSettingsModal;
+openSettingsModal = function() {
+    history.pushState(null, null, '#settings'); // 가짜 기록 추가
+    originalOpenSettingsModal();
+};
 setTimeout(updatePracticalCalc, 500);	
+function openSettingsModal() { 
+    document.getElementById('settings-modal').classList.add('open'); 
+    updateSettingsTimerUI(); // 열 때 타이머 파란색 버튼 세팅
+}
+function closeSettingsModal() { document.getElementById('settings-modal').classList.remove('open'); }
+
+// ⏱️ 설정창 타이머 UI 업데이트 로직
+function updateSettingsTimerUI() {
+    document.querySelectorAll('.timer-setting-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.background = 'white';
+        btn.style.color = '#64748b';
+    });
+    let activeId = '';
+    if(isInfinite) activeId = 'ts-unlimited';
+    else if(timerTime === 60) activeId = 'ts-1min';
+    else activeId = 'ts-custom';
+    
+    const activeBtn = document.getElementById(activeId);
+    if(activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.style.background = '#eff6ff';
+        activeBtn.style.color = '#2563eb';
+    }
+}
+
+// (기존 setTimerOption을 가로채서 설정창 UI도 같이 업데이트하게 만듦)
+const originalSetTimerOption = setTimerOption;
+setTimerOption = function(mode) {
+    originalSetTimerOption(mode);
+    updateSettingsTimerUI();
+};
+
+// 🔄 설정창 내부 칩 조작 및 순서 시각화 로직
+let settingsActiveFields = [...ALL_FIELDS];
+
+function updateOrderPreview() {
+    const previewEl = document.getElementById('order-preview-text');
+    if (settingsActiveFields.length === 0) {
+        previewEl.innerHTML = "선택된 항목이 없습니다.";
+        previewEl.style.color = "#94a3b8";
+        previewEl.style.background = "#f1f5f9";
+        previewEl.style.borderColor = "#cbd5e1";
+    } else {
+        previewEl.innerHTML = "표기 순서 : " + settingsActiveFields.join(" ➔ ");
+        previewEl.style.color = "#2563eb";
+        previewEl.style.background = "#eff6ff";
+        previewEl.style.borderColor = "#bfdbfe";
+    }
+}
+
+function toggleSettingsField(chip, code) {
+    chip.classList.toggle('active');
+    if(chip.classList.contains('active')) {
+        if(!settingsActiveFields.includes(code)) settingsActiveFields.push(code);
+    } else {
+        settingsActiveFields = settingsActiveFields.filter(x => x !== code);
+    }
+    updateOrderPreview(); // 누를 때마다 화면 텍스트 갱신!
+}
+
+function applyGlobalOrderFromSettings() {
+    if (settingsActiveFields.length === 0) {
+        alert("최소 1개 이상의 항목을 선택해야 합니다."); return;
+    }
+    if (!confirm("화면에 표시된 순서대로 전체 카드 뒷면에 일괄 적용하시겠습니까?")) return;
+    
+    cards.forEach(c => {
+        if (!userData[c.id]) userData[c.id] = {};
+        userData[c.id].activeFields = [...settingsActiveFields];
+    });
+    saveUserData(); 
+    closeSettingsModal(); 
+    renderManager();
+    showToast("✅ 전체 카드에 디폴트 순서가 적용되었습니다.");
+}
+
+// 🚦 약점(신호등) 전체 초기화
+function resetAllTrafficLights() {
+    if (!confirm("모든 카드의 🚦신호등(약점) 마킹을 0단계(기본)로 일괄 초기화하시겠습니까?")) return;
+    for(let id in userData) {
+        ALL_FIELDS.forEach(code => {
+            if(userData[id][code+'_w'] !== undefined) userData[id][code+'_w'] = 0;
+        });
+    }
+    saveUserData(); renderManager(); showToast("🚦 약점 마킹이 모두 초기화되었습니다.");
+}
+
+// 📊 학습기록 전체 초기화 (O, X 카운트 날리기)
+function resetAllStudyRecords() {
+    if (!confirm("모든 카드의 📊학습기록(정답률, O/X 횟수)을 0으로 일괄 초기화하시겠습니까?\n(작성하신 텍스트 해설은 유지됩니다.)")) return;
+    for(let id in userData) {
+        userData[id].o = 0;
+        userData[id].x = 0;
+    }
+    saveUserData(); renderManager(); showToast("📊 학습기록이 모두 초기화되었습니다.");
+}
+
+function toggleTrafficLight(cardId, code) {
+    if(!userData[cardId]) userData[cardId] = {};
+    let currentLvl = userData[cardId][code+'_w'] || 0;
+    currentLvl = (currentLvl + 1) % 4;
+    userData[cardId][code+'_w'] = currentLvl;
+    saveUserData();
+
+    if(document.getElementById('manager-preview-modal').classList.contains('open')) {
+        renderBack(cards.find(c => c.id === cardId), 'manager-preview-form');
+    } else if (document.getElementById('study-view').classList.contains('active')) {
+        renderBack(studyDeck[currentIndex], 'card-back-form');
+    }
+    renderManager();
+}
+
+let touchStartX = 0; let touchEndX = 0;
+document.addEventListener('touchstart', e => {
+    if(e.target.closest('.rich-editor') || e.target.closest('.cpx-form') || e.target.closest('.modal-content')) return;
+    touchStartX = e.changedTouches[0].screenX;
+}, {passive: true});
+
+document.addEventListener('touchend', e => {
+    if(e.target.closest('.rich-editor') || e.target.closest('.cpx-form') || e.target.closest('.modal-content')) return;
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipeLogic();
+}, {passive: true});
+
+function handleSwipeLogic() {
+    if (!document.getElementById('study-view').classList.contains('active')) return;
+    if (document.getElementById('empty-state').style.display === 'block') return;
+    
+    const wrapper = document.getElementById('card-wrapper');
+    const isBack = wrapper.classList.contains('flipped');
+    
+    if (touchEndX < touchStartX - 50) {
+        if (currentMode === 'review') return;
+        if (isBack) handleAnswer(false);
+        else nextCard();
+    }
+    if (touchEndX > touchStartX + 50) {
+        if (currentMode === 'review') return;
+        if (isBack) handleAnswer(true);
+        else prevCard();
+    }
+}
 init();
 </script>
 </body>
 </html>
+
 
 
 
