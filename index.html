@@ -150,6 +150,7 @@
         .card-area {
             flex: 1; padding: 1.5rem; display: flex; align-items: center; justify-content: center;
             perspective: 1000px; position: relative;
+            min-height: 0; /* 추가됨: 내용이 아무리 길어져도 하단 버튼을 화면 밖으로 밀어내지 않게 방어 */
         }
         
         /* SHAKE ANIMATION */
@@ -291,6 +292,7 @@
         .controls { 
             padding: 1rem; padding-bottom: calc(1rem + env(safe-area-inset-bottom));
             border-top: 1px solid #e2e8f0; background: white; z-index: 20;
+            flex-shrink: 0; /* 추가됨: 어떤 상황에서도 버튼 영역이 찌그러지거나 밑으로 숨겨지지 않게 강제 고정 */
         }
         
         .nav-row { display: flex; gap: 0.8rem; align-items: center; width: 100%; }
@@ -2688,6 +2690,7 @@ init();
 </script>
 </body>
 </html>
+
 
 
 
