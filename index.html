@@ -2273,8 +2273,15 @@ function generatePracticalSets() {
                 !currentSet.some(existing => areSiblings(c.id, existing.id))
             );
             
-            // 2단계 (차선책): 8개 계통이 다 찼다면(또는 남은 풀에 겹치는 계통뿐이라면), 
-            // 부득이하게 계통 중복은 허용하되 형제 증상만 피해서 찾기
+            // 2단계 (쏠림 방지): 완전히 새로운 계통이 없다면, '같은 계통이 현재 1개 이하(최대 2개까지만 허용)'인 것 중에서 형제 증상 피해서 찾기
+            if (safeIdx === -1) {
+                safeIdx = pool.findIndex(c => 
+                    !currentSet.some(existing => areSiblings(c.id, existing.id)) &&
+                    currentSet.filter(existing => existing.mockGroup === c.mockGroup).length < 2
+                );
+            }
+
+            // 3단계 (최후의 보루): 문제 수가 유독 많은 특정 계통(G4 등) 때문에 2단계도 안 된다면, 그때만 예외적으로 3개 이상 허용
             if (safeIdx === -1) {
                 safeIdx = pool.findIndex(c => !currentSet.some(existing => areSiblings(c.id, existing.id)));
             }
@@ -2282,7 +2289,7 @@ function generatePracticalSets() {
             if (safeIdx !== -1) {
                 currentSet.push(pool.splice(safeIdx, 1)[0]);
             } else {
-                currentSet.push(pool.splice(0, 1)[0]); // 최후의 보루
+                currentSet.push(pool.splice(0, 1)[0]);
             }
             if(currentSet.length === perSet || pool.length === 0) {
                 // 세트 내 문제 순서 완전 랜덤 뒤섞기
@@ -2701,6 +2708,7 @@ init();
 </script>
 </body>
 </html>
+
 
 
 
