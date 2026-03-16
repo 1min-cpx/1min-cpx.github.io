@@ -2299,42 +2299,58 @@ function generatePracticalSets() {
             }
         }
     } else {
-        let available = JSON.parse(JSON.stringify(TOPICS)); 
-        
+        // [파이널 모드: 8세트 강제 할당 및 블랙홀 방지 로직]
+        let pools = {};
+        // 1. 각 그룹별로 독립된 카드 주머니를 생성하고 섞습니다.
+        for(let i=1; i<=8; i++) {
+            pools[i] = [...TOPICS.filter(c => c.mockGroup === i)].sort(() => Math.random() - 0.5);
+        }
+
         for(let i=0; i<8; i++) {
             let currentSet = [];
             
             const pullOne = (gId) => {
-                let cands = available.filter(c => c.mockGroup === gId);
-                if(cands.length === 0) cands = TOPICS.filter(c => c.mockGroup === gId); 
-                let picked = cands[Math.floor(Math.random() * cands.length)];
-                available = available.filter(c => c.id !== picked.id); 
+                // 주머니가 비었으면 다시 58개 전체에서 해당 그룹만 가져와 새로 채움
+                if(pools[gId].length === 0) {
+                    pools[gId] = [...TOPICS.filter(c => c.mockGroup === gId)].sort(() => Math.random() - 0.5);
+                }
+                
+                // 형제 증상 배제 로직
+                let safeIdx = pools[gId].findIndex(c => !currentSet.some(existing => areSiblings(c.id, existing.id)));
+                let picked = safeIdx !== -1 ? pools[gId].splice(safeIdx, 1)[0] : pools[gId].splice(0, 1)[0];
                 currentSet.push(picked);
             };
 
             const pullTwoFromG4 = () => {
-                let cands = available.filter(c => c.mockGroup === 4);
-                if(cands.length < 2) cands = TOPICS.filter(c => c.mockGroup === 4);
-                
-                let subGroups = [...new Set(cands.map(c => c.subGroup))].sort(()=>Math.random()-0.5);
-                if(subGroups.length < 2) subGroups = ['A','B','C','D'].sort(()=>Math.random()-0.5); 
+                // 4그룹은 2개씩 뽑아야 하므로, 1개만 남았을 때 주머니를 채워야 함
+                if(pools[4].length < 2) {
+                    let leftovers = [...pools[4]]; // 마지막 남은 1개 (블랙홀 방지의 핵심)
+                    let newPool = [...TOPICS.filter(c => c.mockGroup === 4)].sort(() => Math.random() - 0.5);
+                    // 안 뽑혔던 1개를 맨 앞에 두고, 나머지를 뒤에 붙여 무조건 먼저 뽑히게 강제함
+                    pools[4] = [...leftovers, ...newPool.filter(c => !leftovers.some(l => l.id === c.id))];
+                }
 
-                let p1 = cands.find(c => c.subGroup === subGroups[0]);
-                let p2 = cands.find(c => c.subGroup === subGroups[1]);
-                
-                if(!p1) p1 = TOPICS.find(c => c.mockGroup===4 && c.subGroup===subGroups[0]);
-                if(!p2) p2 = TOPICS.find(c => c.mockGroup===4 && c.subGroup===subGroups[1]);
+                // 첫 번째 4그룹 문제 뽑기
+                let idx1 = pools[4].findIndex(c => !currentSet.some(existing => areSiblings(c.id, existing.id)));
+                let p1 = idx1 !== -1 ? pools[4].splice(idx1, 1)[0] : pools[4].splice(0, 1)[0];
+                currentSet.push(p1);
 
-                available = available.filter(c => c.id !== p1.id && c.id !== p2.id);
-                currentSet.push(p1, p2);
+                // 두 번째 4그룹 문제 뽑기 (첫 번째와 subGroup이 달라야 함)
+                let idx2 = pools[4].findIndex(c => 
+                    c.subGroup !== p1.subGroup && 
+                    !currentSet.some(existing => areSiblings(c.id, existing.id))
+                );
+                let p2 = idx2 !== -1 ? pools[4].splice(idx2, 1)[0] : pools[4].splice(0, 1)[0];
+                currentSet.push(p2);
             };
 
             pullOne(1); pullOne(2); pullOne(3);
             pullTwoFromG4(); 
             pullOne(5); pullOne(6); pullOne(7); pullOne(8);
-				// 세트 내 문제 순서 완전 랜덤 뒤섞기
-                currentSet.sort(() => Math.random() - 0.5);
-                generatedSets.push({ cards: currentSet, isCompleted: false, results: {} });
+            
+            // 세트 내 문제 순서 완전 랜덤 뒤섞기
+            currentSet.sort(() => Math.random() - 0.5);
+            generatedSets.push({ cards: currentSet, isCompleted: false, results: {} });
         }
     }
     
