@@ -19,7 +19,7 @@
     <meta property="og:title" content="1분 CPX - 실기시험 순발력 훈련">
     <meta property="og:description" content="C.C를 보고 1분 안에 연상하는 실전 감각 연습. 제작: KNU FM JSW">
 
-    <title>1분 CPX v2.2</title>
+    <title>1분 CPX v2.3</title>
     
     
     <link rel="apple-touch-icon" href="icon.PNG">
@@ -603,7 +603,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <img src="icon.PNG" style="width:2.2rem; height:2.2rem; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
                 <div style="display:flex; flex-direction:column; justify-content:center;">
                     <span class="main-title">1분 CPX</span>
-                    <span class="sub-title">v2.2</span>
+                    <span class="sub-title">v2.3</span>
                 </div>
             </div>
 
@@ -743,7 +743,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
                 <div id="practical-calc-text" style="color:#2563eb; font-weight:800; font-size:0.9rem;">5세트 + 나머지(8문제)</div>
             </div>
-
+			<div style="display:flex; align-items:center; justify-content:center; gap:0.5rem; margin-bottom:1rem;">
+                <input type="checkbox" id="practical-only-active" style="width:1.2rem; height:1.2rem; accent-color:#2563eb;">
+                <label for="practical-only-active" style="font-size:0.95rem; font-weight:700; color:#475569; cursor:pointer;">목록에서 활성화된 카드만 출제</label>
+            </div>
             <button class="btn" style="width:100%;" onclick="generatePracticalSets()">스케줄 세트 생성하기</button>
 			<button id="btn-practical-review-quiz" class="btn" style="width:100%; margin-top:0.5rem; background:#cbd5e1; color:white;" disabled onclick="startPracticalReviewQuiz()">오답만 퀴즈모드로 복습하기</button>
         </div>
@@ -2261,19 +2264,31 @@ function setPracticalMode(mode, force = false) {
 function generatePracticalSets() {
     generatedSets = [];
     
+    // 1. 체크박스 상태 확인 및 출제 풀(Pool) 세팅
+    const useOnlyActive = document.getElementById('practical-only-active').checked;
+    let baseTopics = useOnlyActive ? cards.filter(c => c.isVisible) : JSON.parse(JSON.stringify(TOPICS));
+    
+    // 🚨 [긴급 패치] 과거 캐시 데이터에 mockGroup이 없는 현상 강제 동기화
+    baseTopics.forEach(c => {
+        const origin = TOPICS.find(t => t.id === c.id);
+        if(origin) {
+            c.mockGroup = origin.mockGroup;
+            c.subGroup = origin.subGroup;
+            c.cat = origin.cat;
+        }
+    });
+
     if(currentPracticalMode === 'review') {
         let perSet = parseInt(document.getElementById('practical-num').value) || 10;
-        let pool = [...TOPICS].sort(() => Math.random() - 0.5);
+        let pool = [...baseTopics].sort(() => Math.random() - 0.5);
         
         let currentSet = [];
         while(pool.length > 0) {
-            // 1단계 (우선순위): 세트에 아직 들어가지 않은 새로운 계통(mockGroup)이면서 형제 증상도 아닌 문제 찾기
             let safeIdx = pool.findIndex(c => 
                 !currentSet.some(existing => existing.mockGroup === c.mockGroup) && 
                 !currentSet.some(existing => areSiblings(c.id, existing.id))
             );
             
-            // 2단계 (쏠림 방지): 완전히 새로운 계통이 없다면, '같은 계통이 현재 1개 이하(최대 2개까지만 허용)'인 것 중에서 형제 증상 피해서 찾기
             if (safeIdx === -1) {
                 safeIdx = pool.findIndex(c => 
                     !currentSet.some(existing => areSiblings(c.id, existing.id)) &&
@@ -2281,7 +2296,6 @@ function generatePracticalSets() {
                 );
             }
 
-            // 3단계 (최후의 보루): 문제 수가 유독 많은 특정 계통(G4 등) 때문에 2단계도 안 된다면, 그때만 예외적으로 3개 이상 허용
             if (safeIdx === -1) {
                 safeIdx = pool.findIndex(c => !currentSet.some(existing => areSiblings(c.id, existing.id)));
             }
@@ -2292,50 +2306,74 @@ function generatePracticalSets() {
                 currentSet.push(pool.splice(0, 1)[0]);
             }
             if(currentSet.length === perSet || pool.length === 0) {
-                // 세트 내 문제 순서 완전 랜덤 뒤섞기
                 currentSet.sort(() => Math.random() - 0.5);
                 generatedSets.push({ cards: currentSet, isCompleted: false, results: {} });
                 currentSet = [];
             }
         }
     } else {
-        // [파이널 모드: 8세트 강제 할당 및 블랙홀 방지 로직]
-        let pools = {};
-        // 1. 각 그룹별로 독립된 카드 주머니를 생성하고 섞습니다.
-        for(let i=1; i<=8; i++) {
-            pools[i] = [...TOPICS.filter(c => c.mockGroup === i)].sort(() => Math.random() - 0.5);
+        // [파이널 모드]
+        
+        // 🚨 사전 검열 (Validation) - 규칙 은닉 및 UI 계통명 매핑
+        if (useOnlyActive) {
+            let missingCats = new Set();
+            for (let i = 1; i <= 8; i++) {
+                let activeCount = baseTopics.filter(c => c.mockGroup === i).length;
+                let requiredCount = (i === 4) ? 2 : 1; // 내부 규칙 (유저에게는 숨김)
+                
+                if (activeCount < requiredCount) {
+                    // 내부 그룹 번호를 유저가 아는 '카테고리명(cat)'으로 변환하여 수집
+                    TOPICS.filter(t => t.mockGroup === i).forEach(t => missingCats.add(t.cat));
+                }
+            }
+            
+            if (missingCats.size > 0) {
+                let catList = Array.from(missingCats).join(', ');
+                alert(`⚠️ 파이널 모드 출제 불가!\n실전 모의고사 밸런스를 맞추기 위해 다음 파트의 증례가 더 필요합니다.\n\n[ 부족한 계통: ${catList} ]\n\n목록 탭에서 해당 파트의 카드를 추가로 활성화해주세요.`);
+                return;
+            }
         }
 
-        for(let i=0; i<8; i++) {
+        // 🧮 동적 세트 수 계산 (Dynamic Set Count)
+        let requiredSets = 8;
+        if (useOnlyActive) {
+            let maxSets = 0;
+            for(let i=1; i<=8; i++) {
+                let count = baseTopics.filter(c => c.mockGroup === i).length;
+                let setsNeeded = (i === 4) ? Math.ceil(count / 2) : count;
+                if(setsNeeded > maxSets) maxSets = setsNeeded;
+            }
+            requiredSets = maxSets;
+        }
+
+        let pools = {};
+        for(let i=1; i<=8; i++) {
+            pools[i] = [...baseTopics.filter(c => c.mockGroup === i)].sort(() => Math.random() - 0.5);
+        }
+
+        for(let i=0; i<requiredSets; i++) {
             let currentSet = [];
             
             const pullOne = (gId) => {
-                // 주머니가 비었으면 다시 58개 전체에서 해당 그룹만 가져와 새로 채움
                 if(pools[gId].length === 0) {
-                    pools[gId] = [...TOPICS.filter(c => c.mockGroup === gId)].sort(() => Math.random() - 0.5);
+                    pools[gId] = [...baseTopics.filter(c => c.mockGroup === gId)].sort(() => Math.random() - 0.5);
                 }
-                
-                // 형제 증상 배제 로직
                 let safeIdx = pools[gId].findIndex(c => !currentSet.some(existing => areSiblings(c.id, existing.id)));
                 let picked = safeIdx !== -1 ? pools[gId].splice(safeIdx, 1)[0] : pools[gId].splice(0, 1)[0];
                 currentSet.push(picked);
             };
 
             const pullTwoFromG4 = () => {
-                // 4그룹은 2개씩 뽑아야 하므로, 1개만 남았을 때 주머니를 채워야 함
                 if(pools[4].length < 2) {
-                    let leftovers = [...pools[4]]; // 마지막 남은 1개 (블랙홀 방지의 핵심)
-                    let newPool = [...TOPICS.filter(c => c.mockGroup === 4)].sort(() => Math.random() - 0.5);
-                    // 안 뽑혔던 1개를 맨 앞에 두고, 나머지를 뒤에 붙여 무조건 먼저 뽑히게 강제함
+                    let leftovers = [...pools[4]]; 
+                    let newPool = [...baseTopics.filter(c => c.mockGroup === 4)].sort(() => Math.random() - 0.5);
                     pools[4] = [...leftovers, ...newPool.filter(c => !leftovers.some(l => l.id === c.id))];
                 }
 
-                // 첫 번째 4그룹 문제 뽑기
                 let idx1 = pools[4].findIndex(c => !currentSet.some(existing => areSiblings(c.id, existing.id)));
                 let p1 = idx1 !== -1 ? pools[4].splice(idx1, 1)[0] : pools[4].splice(0, 1)[0];
                 currentSet.push(p1);
 
-                // 두 번째 4그룹 문제 뽑기 (첫 번째와 subGroup이 달라야 함)
                 let idx2 = pools[4].findIndex(c => 
                     c.subGroup !== p1.subGroup && 
                     !currentSet.some(existing => areSiblings(c.id, existing.id))
@@ -2348,17 +2386,15 @@ function generatePracticalSets() {
             pullTwoFromG4(); 
             pullOne(5); pullOne(6); pullOne(7); pullOne(8);
             
-            // 세트 내 문제 순서 완전 랜덤 뒤섞기
             currentSet.sort(() => Math.random() - 0.5);
             generatedSets.push({ cards: currentSet, isCompleted: false, results: {} });
         }
     }
     
-    savePracticalState(); // 생성 시 즉시 로컬 스토리지에 저장
+    savePracticalState(); 
     renderPracticalSets();
     showToast("스케줄 생성이 완료되었습니다!");
 }
-
 function renderPracticalSets() {
     const container = document.getElementById('practical-sets-container');
     const renderArea = document.getElementById('sets-render-area');
