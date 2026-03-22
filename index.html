@@ -19,7 +19,7 @@
     <meta property="og:title" content="1분 CPX - 실기시험 순발력 훈련">
     <meta property="og:description" content="C.C를 보고 1분 안에 연상하는 실전 감각 연습. 제작: KNU FM JSW">
 
-    <title>1분 CPX v2.3</title>
+    <title>1분 CPX v2.4</title>
     
     
     <link rel="apple-touch-icon" href="icon.PNG">
@@ -603,7 +603,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <img src="icon.PNG" style="width:2.2rem; height:2.2rem; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
                 <div style="display:flex; flex-direction:column; justify-content:center;">
                     <span class="main-title">1분 CPX</span>
-                    <span class="sub-title">v2.3</span>
+                    <span class="sub-title">v2.4</span>
                 </div>
             </div>
 
@@ -617,7 +617,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                 학습
             </button>
-            <button class="header-btn" id="btn-mode-mock" onclick="switchMode('mock-setup')">
+            <button class="header-btn" id="btn-mode-mock" onclick="navToMock()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle></svg>
                 퀴즈
             </button>
@@ -1539,8 +1539,8 @@ function handleAnswer(isCorrect) {
     saveUserData(); 
     
     if(currentMode === 'mock') {
-        mockResults.push({ id: cId, result: isCorrect });
-	if(isPracticalReviewMode && isCorrect) {
+        mockResults.push({ id: cId, result: isCorrect });
+		if(isPracticalReviewMode && isCorrect) {
             generatedSets.forEach(s => {
                 if(s.isCompleted && s.results[cId] === false) s.results[cId] = 'reviewed';
             });
@@ -1549,9 +1549,10 @@ function handleAnswer(isCorrect) {
     } else if(currentMode === 'practical') {
         generatedSets[currentPracticalSetIndex].results[cId] = isCorrect;
         savePracticalState(); // 피드백 1: 결과 기록할 때마다 로컬 스토리지에 저장
-    }
-    
-    currentIndex++; renderCard();
+    }
+    
+    currentIndex++; renderCard();
+    if (currentMode === 'mock' && !isPracticalReviewMode) saveMockState();
 }
 function prevCard() { if(currentIndex>0) { currentIndex--; renderCard(); } else showToast("첫 번째 카드입니다."); }
 function nextCard() { if(currentIndex<studyDeck.length-1) { currentIndex++; renderCard(); } else showToast("마지막 카드입니다."); }
@@ -1591,6 +1592,7 @@ function switchMode(mode) {
     else if (mode.startsWith('mock')) { 
         document.getElementById('btn-mode-mock').classList.add('active'); 
         if(mode === 'mock-setup') { 
+            clearMockState();
             document.getElementById('mock-setup-view').classList.add('active'); 
             renderMockTree(); 
         } else if(mode === 'mock-result') { 
@@ -1772,7 +1774,10 @@ function toggleAllMockTree() {
     updateScopeCount(); 
 }
 
-function startMockExam() { const chks = document.querySelectorAll('.tree-chk-item:checked'); if(chks.length === 0) { alert("범위를 선택해주세요."); return; } const num = parseInt(document.getElementById('mock-num').value) || 5; const selectedIds = Array.from(chks).map(c => parseInt(c.value)); const selectedCards = cards.filter(c => selectedIds.includes(c.id)); const cats = {}; selectedCards.forEach(c => { if(!cats[c.cat]) cats[c.cat] = []; cats[c.cat].push(c); }); let pool = []; const catKeys = Object.keys(cats).sort(() => Math.random() - 0.5); catKeys.forEach(k => { if(cats[k].length > 0) { const idx = Math.floor(Math.random() * cats[k].length); pool.push(cats[k][idx]); cats[k].splice(idx, 1); } }); let remaining = num - pool.length; let leftovers = []; Object.values(cats).forEach(arr => leftovers.push(...arr)); if(remaining > 0 && leftovers.length > 0) { leftovers.sort(() => Math.random() - 0.5); pool.push(...leftovers.slice(0, remaining)); } else if (remaining < 0) { pool = pool.slice(0, num); } pool.sort(() => Math.random() - 0.5); currentMode = 'mock'; studyDeck = pool; currentIndex = 0; mockResults = []; document.getElementById('study-view').classList.add('active'); document.getElementById('mock-setup-view').classList.remove('active'); renderCard(); showToast(`${pool.length}문제 퀴즈 시작!`); }
+function startMockExam() { const chks = document.querySelectorAll('.tree-chk-item:checked'); if(chks.length === 0) { alert("범위를 선택해주세요."); return; } const num = parseInt(document.getElementById('mock-num').value) || 5; const selectedIds = Array.from(chks).map(c => parseInt(c.value)); const selectedCards = cards.filter(c => selectedIds.includes(c.id)); const cats = {}; selectedCards.forEach(c => { if(!cats[c.cat]) cats[c.cat] = []; cats[c.cat].push(c); }); let pool = []; const catKeys = Object.keys(cats).sort(() => Math.random() - 0.5); catKeys.forEach(k => { if(cats[k].length > 0) { const idx = Math.floor(Math.random() * cats[k].length); pool.push(cats[k][idx]); cats[k].splice(idx, 1); } }); let remaining = num - pool.length; let leftovers = []; Object.values(cats).forEach(arr => leftovers.push(...arr)); if(remaining > 0 && leftovers.length > 0) { leftovers.sort(() => Math.random() - 0.5); pool.push(...leftovers.slice(0, remaining)); } else if (remaining < 0) { pool = pool.slice(0, num); } pool.sort(() => Math.random() - 0.5); currentMode = 'mock'; studyDeck = pool; currentIndex = 0; mockResults = []; document.getElementById('study-view').classList.add('active'); document.getElementById('mock-setup-view').classList.remove('active'); renderCard(); showToast(`${pool.length}문제 퀴즈 시작!`); 
+    isPracticalReviewMode = false;
+    saveMockState();
+}
 function showMockResult() { 
     switchMode('mock-result'); 
     const correctCount = mockResults.filter(r => r.result).length; 
@@ -1807,6 +1812,7 @@ function retryWrongAnswers() {
     currentMode = 'mock'; studyDeck = pool; currentIndex = 0; mockResults = [];
     document.getElementById('study-view').classList.add('active'); document.getElementById('mock-result-view').classList.remove('active');
     renderCard(); showToast(`${pool.length}문제 재도전 시작!`);
+    saveMockState();
 }
 function reviewMockCard(id) { const c = cards.find(x => x.id === id); currentMode = 'review'; studyDeck = [c]; currentIndex = 0; switchMode('study'); renderCard(); }
 function returnToResults() { switchMode('mock-result'); }
@@ -2200,6 +2206,49 @@ let isPracticalReviewMode = false;
 let generatedSets = [];
 let currentPracticalSetIndex = 0; 
 
+// --- 퀴즈 모드 상태 저장 로직 ---
+function saveMockState() {
+    if (isPracticalReviewMode) return; // 실전 모드 복습 중일 때는 저장 안 함
+    const state = {
+        studyDeck: studyDeck,
+        currentIndex: currentIndex,
+        mockResults: mockResults
+    };
+    localStorage.setItem('cpx_v38_mock_state', JSON.stringify(state));
+}
+
+function clearMockState() {
+    localStorage.removeItem('cpx_v38_mock_state');
+    studyDeck = [];
+    currentIndex = 0;
+    mockResults = [];
+}
+
+function navToMock() {
+    const saved = localStorage.getItem('cpx_v38_mock_state');
+    if (saved) {
+        const state = JSON.parse(saved);
+        if (state.studyDeck && state.studyDeck.length > 0) {
+            // 저장된 퀴즈가 있는 경우 상태 복원
+            currentMode = 'mock';
+            isPracticalReviewMode = false;
+            studyDeck = state.studyDeck;
+            currentIndex = state.currentIndex;
+            mockResults = state.mockResults || [];
+            
+            if (currentIndex >= studyDeck.length) {
+                showMockResult(); // 다 푼 상태면 결과창으로
+            } else {
+                switchMode('study'); // 풀던 중이면 카드창으로
+                renderCard();
+                showToast("하던 퀴즈를 이어서 진행합니다.");
+            }
+            return;
+        }
+    }
+    // 저장된 퀴즈가 없으면 설정창으로
+    switchMode('mock-setup');
+}
 // 피드백 1: 실전 모드 상태 저장 및 불러오기 (앱 껐다 켜도 유지)
 function savePracticalState() {
     const state = { mode: currentPracticalMode, sets: generatedSets };
