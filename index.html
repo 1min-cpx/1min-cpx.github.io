@@ -670,7 +670,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <button class="study-action-btn" id="btn-shuffle" onclick="toggleShuffle()" title="순서 섞기">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
                 </button>
-                <button class="study-action-btn" id="btn-stop-mock" onclick="stopMockExam()" style="display:none; color: #ef4444; border-color: #fca5a5; background: #fef2f2;" title="퀴즈 종료">
+                <button class="study-action-btn" id="btn-stop-mock" onclick="stopMockExam()" style="display:none; color: #64748b; border-color: #e2e8f0; background: #f1f5f9;" title="퀴즈 종료">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
@@ -2007,13 +2007,15 @@ function saveFieldData() {
 
 // 1. 내보내기 (복사하기)
 async function exportDataToClipboard() {
-    const backupData = {
-        cards: cards,
-        userData: userData,
-        cats: collapsedCategories,
-        practicalState: { mode: currentPracticalMode, sets: generatedSets }, // 이 줄 추가됨
-        date: new Date().toLocaleString()
-    };
+    const savedMock = localStorage.getItem('cpx_v38_mock_state');
+    const backupData = {
+        cards: cards,
+        userData: userData,
+        cats: collapsedCategories,
+        practicalState: { mode: currentPracticalMode, sets: generatedSets }, // 이 줄 추가됨
+        mockState: savedMock ? JSON.parse(savedMock) : null,
+        date: new Date().toLocaleString()
+    };
 
     const jsonString = JSON.stringify(backupData);
 
@@ -2049,13 +2051,15 @@ async function importDataFromClipboard() {
 // 3. 가져오기 (수동 입력창 사용) ; 안쓰는 기능이라 삭제하고 파일 형태로 업데이트함 
 // --- 💾 신규 기능: 파일로 내보내기 (권장) ---
 function exportDataToFile() {
-    const backupData = {
-        cards: cards,
-        userData: userData,
-        cats: collapsedCategories,
-        practicalState: { mode: currentPracticalMode, sets: generatedSets }, // 이 줄 추가됨
-        date: new Date().toLocaleString()
-    };
+    const savedMock = localStorage.getItem('cpx_v38_mock_state');
+    const backupData = {
+        cards: cards,
+        userData: userData,
+        cats: collapsedCategories,
+        practicalState: { mode: currentPracticalMode, sets: generatedSets }, // 이 줄 추가됨
+        mockState: savedMock ? JSON.parse(savedMock) : null,
+        date: new Date().toLocaleString()
+    };
     const jsonString = JSON.stringify(backupData);
     
     // Blob 객체 생성 (자바스크립트 데이터를 파일 형태로 묶음)
@@ -2121,9 +2125,14 @@ function processDataRestoration(jsonString) {
             saveUserData();
             saveCats();
             if (data.practicalState) {
-                currentPracticalMode = data.practicalState.mode || 'review';
-                generatedSets = data.practicalState.sets || [];
-                savePracticalState();
+                currentPracticalMode = data.practicalState.mode || 'review';
+                generatedSets = data.practicalState.sets || [];
+                savePracticalState();
+            }
+            if (data.mockState) {
+                localStorage.setItem('cpx_v38_mock_state', JSON.stringify(data.mockState));
+            } else {
+                localStorage.removeItem('cpx_v38_mock_state');
             }
 			alert("✅ 복원이 완료되었습니다.");
             location.reload();
