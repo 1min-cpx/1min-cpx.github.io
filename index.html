@@ -652,10 +652,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
                 실전
             </button>
+<button class="header-btn" id="btn-mode-anki" onclick="switchMode('anki-deck')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+    안키 덱
+</button>
             <button class="header-btn" id="btn-mode-list" onclick="switchMode('manager')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                 목록
             </button>
+
+
         </div>
     </header>
 
@@ -809,6 +815,43 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </button>
         </div>
     </div>
+<div id="anki-deck-view" class="view-section" style="background:#f1f5f9; padding:1.5rem; overflow-y:auto;">
+    <div class="result-card" style="margin-bottom: 1rem; padding: 1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem;">
+            <div style="font-size:1.2rem; font-weight:900; color:#1e293b;">Anki 덱 세트</div>
+            <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; font-weight:700; color:#475569;">
+                하루 새 카드
+                <input type="number" id="anki-daily-limit" value="2" min="1" max="50" style="width:50px; padding:0.3rem; border:1px solid #cbd5e1; border-radius:6px; text-align:center;" onchange="saveAnkiDailyLimit(this.value)">
+                개
+            </div>
+        </div>
+        <div id="anki-deck-list" style="display:flex; flex-direction:column; gap:0.8rem;">
+            </div>
+    </div>
+</div>
+
+<div id="anki-setup-view" class="view-section" style="background:#fff;">
+    <div class="list-action-bar">
+        <button class="btn" style="width:auto; padding:0.4rem 0.8rem; font-size:0.85rem; background:#f1f5f9; color:#475569;" onclick="switchMode('anki-deck')">
+            🔙 뒤로
+        </button>
+        <div style="margin-right:auto; margin-left:1rem; font-size:1rem; font-weight:900; color:#1e293b;" id="anki-setup-title">
+            덱 설정
+        </div>
+        <button class="btn" style="width:auto; padding:0.4rem 1rem; font-size:0.9rem; background:#2563eb; color:white;" onclick="saveAnkiDeck()">
+            💾 저장
+        </button>
+    </div>
+    <div class="mock-setup-container">
+        <div class="tree-container">
+            <div class="tree-header">
+                <span>출제 범위 선택 <span id="anki-scope-count" style="color:#2563eb; font-weight:800; font-size:0.9rem; margin-left:4px;">(0/0)</span></span>
+                <button class="btn" style="padding:0.3rem 0.8rem; font-size:0.8rem; width:auto; height:auto;" onclick="toggleAllAnkiTree()">전체 선택/해제</button>
+            </div>
+            <div class="tree-content" id="anki-tree-root"></div>
+        </div>
+    </div>
+</div>
 	<div class="modal-overlay" id="settings-modal" style="z-index: 900;">
         <div class="modal-content" style="height:auto; max-height:85%; background:#f8fafc;">
             <div style="padding:1rem 1.5rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:white;">
@@ -1335,10 +1378,27 @@ function generateCase(card) {
 // GLOBAL
 let cards = [], userData = {}, studyDeck = [], mockResults = [], currentIndex = 0, timerTime = 60, timeLeft = 60, timerInterval = null, isInfinite = false, collapsedCategories = {}, isShuffle = false, editTargetId = null, currentMode = 'study', currentSlide = 0;
 
+let ankiDailyLimit = parseInt(localStorage.getItem('cpx_anki_limit')) || 2;
+let ankiSessionQueue = [];
+let ankiTotalToday = 0;
+let ankiCompletedToday = 0;
+
+let ankiDecks = [
+    { id: 1, name: '덱 1', selectedIds: [] },
+    { id: 2, name: '덱 2', selectedIds: [] },
+    { id: 3, name: '덱 3', selectedIds: [] },
+    { id: 4, name: '덱 4', selectedIds: [] },
+    { id: 5, name: '덱 5', selectedIds: [] }
+];
+let currentEditingDeckId = null;
+
 function init() {
     console.log("%c 1분 CPX v1.3 \n%c OCR Enabled ", "color: white; background: #2563eb; padding: 5px; border-radius: 4px;", "color: #2563eb; background: white; padding: 5px;");
     const savedCards = localStorage.getItem('cpx_v37_cards');
     
+    const savedAnki = localStorage.getItem('cpx_v38_anki_decks'); 
+if(savedAnki) ankiDecks = JSON.parse(savedAnki);
+
     if(savedCards) { 
         cards = JSON.parse(savedCards); 
         // ✅ 데이터 동기화 시스템: 기존 캐시를 유지하면서 변경/추가된 TOPICS를 자동 병합
@@ -1511,26 +1571,65 @@ function renderCard() {
     const navRow = document.getElementById('front-nav'); const ansBtns = document.getElementById('answer-btns'); const reviewNav = document.getElementById('review-nav');
     wrapper.classList.remove('shaking');
     
-    if(studyDeck.length === 0 || currentIndex >= studyDeck.length) {
-        if(currentMode === 'mock') { 
-            showMockResult(); 
-        } else if (currentMode === 'practical') { 
-            // ★ 피드백 5: 실전 모드 세트 종료 시 처리
-            finishPracticalSet();
-        } else { 
-            wrapper.style.display = 'none'; document.querySelector('.controls').style.display = 'none'; emptyState.style.display = 'block'; stopTimer(); 
-        } 
-        return;
+    // --- 안키(Anki) 모드일 때 화면 처리 ---
+    if(currentMode === 'anki') {
+        if(ankiSessionQueue.length === 0) {
+            wrapper.style.display = 'none'; document.querySelector('.controls').style.display = 'none'; emptyState.style.display = 'block'; stopTimer();
+            emptyState.innerHTML = `<svg style="width:3rem; height:3rem; margin-bottom:1rem; color:#166534;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><h3 style="color:#1e293b; margin-bottom:0.5rem;">🎉 학습 완료</h3><p>오늘의 Anki 복습을 모두 마쳤습니다!</p><button class="btn" style="width:auto; display:inline-block; margin-top:1rem;" onclick="switchMode('anki-deck')">덱 목록으로</button>`;
+            return;
+        }
+    } else {
+    // --- 일반 모드일 때 화면 처리 ---
+        if(studyDeck.length === 0 || currentIndex >= studyDeck.length) {
+            if(currentMode === 'mock') { 
+                showMockResult(); 
+            } else if (currentMode === 'practical') { 
+                finishPracticalSet();
+            } else { 
+                wrapper.style.display = 'none'; document.querySelector('.controls').style.display = 'none'; emptyState.style.display = 'block'; stopTimer(); 
+                emptyState.innerHTML = `<svg style="width:3rem; height:3rem; margin-bottom:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><h3 style="color:#1e293b; margin-bottom:0.5rem;">학습 종료</h3><p>모든 카드를 확인했습니다.</p><button class="btn" style="width:auto; display:inline-block; margin-top:1rem;" onclick="startSession('all')">처음부터 다시</button>`;
+            } 
+            return;
+        }
     }
     
     wrapper.style.display = 'block'; document.querySelector('.controls').style.display = 'block'; emptyState.style.display = 'none'; wrapper.classList.remove('flipped');
-    const btnStopMock = document.getElementById('btn-stop-mock'); if (btnStopMock) btnStopMock.style.display = (currentMode === 'mock' && !isPracticalReviewMode) ? 'flex' : 'none';
+    
+    // 종료(X) 버튼 세팅
+    const btnStopMock = document.getElementById('btn-stop-mock'); 
+    if (btnStopMock) {
+        btnStopMock.style.display = ((currentMode === 'mock' && !isPracticalReviewMode) || currentMode === 'anki') ? 'flex' : 'none';
+        btnStopMock.onclick = currentMode === 'anki' ? stopAnkiStudy : stopMockExam;
+    }
+
     navRow.style.display = 'none'; ansBtns.style.display = 'none'; reviewNav.style.display = 'none';
-    if(currentMode === 'review') reviewNav.style.display = 'grid'; else navRow.style.display = 'flex';
-    const card = studyDeck[currentIndex]; const data = generateCase(card); const frontEl = document.getElementById('card-front');
+    
+    if(currentMode === 'review') reviewNav.style.display = 'grid'; 
+    else navRow.style.display = 'flex';
+
+    // 안키 모드면 이전/다음 버튼을 숨기고 '정답 확인'만 띄움
+    if(currentMode === 'anki') {
+        navRow.innerHTML = `<button class="btn btn-main" style="width:100%;" onclick="flipCard(true)">정답 확인</button>`;
+    } else {
+        navRow.innerHTML = `<button class="btn btn-nav" onclick="prevCard()">&lt;</button><button class="btn btn-main" onclick="flipCard(true)">정답 확인</button><button class="btn btn-nav" onclick="nextCard()">&gt;</button>`;
+    }
+
+    // 안키 큐(Queue)에서 뽑을지, 일반 배열에서 뽑을지 결정
+    const card = currentMode === 'anki' ? ankiSessionQueue[0] : studyDeck[currentIndex]; 
+    const data = generateCase(card); 
+    const frontEl = document.getElementById('card-front');
+    
     frontEl.innerHTML = `<div class="topic-badge">${data.title}</div><div class="info-box"><div class="info-label">상황 지침</div><div class="info-content">${data.scenario}</div></div><div class="info-box"><div class="vitals-container"><div class="vital-item"><span class="vital-label">혈압</span><span class="vital-value">${data.vitalsData.bp}</span></div><div class="vital-item"><span class="vital-label">맥박</span><span class="vital-value">${data.vitalsData.hr}</span></div><div class="vital-item"><span class="vital-label">호흡</span><span class="vital-value">${data.vitalsData.rr}</span></div><div class="vital-item"><span class="vital-label">체온</span><span class="vital-value">${data.vitalsData.bt}</span></div></div></div><div class="info-box"><div class="info-label">지시사항 : 응시자는 이 환자에게</div><ul class="instruction-list">${data.instructions.map(i => `<li>${i}</li>`).join('')}</ul></div><div class="touch-hint"><span class="pc-hint">⌨️ 위/아래 키 or </span>👆 터치하여 정답 확인</div>`;
     renderBack(card, 'card-back-form');
-    document.getElementById('progress-text').innerText = `${currentIndex+1} / ${studyDeck.length}`; document.getElementById('progress-fill').style.width = `${((currentIndex)/studyDeck.length)*100}%`;
+    
+    if (currentMode === 'anki') {
+        document.getElementById('progress-text').innerText = `남은 카드: ${ankiSessionQueue.length}장`; 
+        document.getElementById('progress-fill').style.width = `${(ankiCompletedToday / ankiTotalToday)*100}%`;
+    } else {
+        document.getElementById('progress-text').innerText = `${currentIndex+1} / ${studyDeck.length}`; 
+        document.getElementById('progress-fill').style.width = `${((currentIndex)/studyDeck.length)*100}%`;
+    }
+    
     stopTimer(); if(!isInfinite) { timeLeft = timerTime; startTimer(); } else updateTimerUI();
 }
 function renderBack(card, targetId) {
@@ -1564,14 +1663,53 @@ function flipCard(isBack) {
     else { wrapper.classList.remove('flipped'); startTimer(); if(currentMode !== 'review') { frontNav.style.display = 'flex'; ansBtns.style.display = 'none'; } }
 }
 function handleAnswer(isCorrect) {
+    // --- 안키(Anki) 모드일 때 정답 처리 로직 ---
+
+if (currentMode === 'anki') {
+        const card = ankiSessionQueue.shift(); 
+        const deck = ankiDecks.find(d => d.id === currentEditingDeckId);
+        const intervals = [1, 3, 7, 14, 28]; 
+        const today = getLocalYYYYMMDD();
+
+        if (!isCorrect) {
+            ankiSessionQueue.push(card);
+            // 새 카드를 틀렸을 때도 '오늘 시작한 카드'로 등록하여 큐에서 사라지지 않게 함
+            if(!deck.progress[card.id]) {
+                deck.progress[card.id] = { step: 0, nextReviewDate: today, firstStudyDate: today };
+            }
+            showToast("다시 학습 대기열에 추가되었습니다.");
+        } else {
+            if(!deck.progress) deck.progress = {};
+            let prog = deck.progress[card.id];
+            
+            // 처음 맞춘 카드라면 오늘 날짜를 시작일로 기록
+            if (!prog) prog = { step: 0, nextReviewDate: null, firstStudyDate: today };
+            else prog.step++; 
+
+            if (prog.step < intervals.length) {
+                prog.nextReviewDate = addDaysToDate(today, intervals[prog.step]);
+            } else {
+                prog.nextReviewDate = '9999-12-31'; 
+            }
+            deck.progress[card.id] = prog;
+            localStorage.setItem('cpx_v38_anki_decks', JSON.stringify(ankiDecks));
+            
+            ankiCompletedToday++;
+            showToast("정답! 다음 복습 주기로 넘어갑니다.");
+        }
+        renderCard(); 
+        return;
+    }
+
+    // --- 일반 모드일 때 기존 정답 처리 로직 ---
     const cId = studyDeck[currentIndex].id; 
     if(!userData[cId]) userData[cId] = {};
     if(isCorrect) userData[cId].o = (userData[cId].o || 0) + 1; else userData[cId].x = (userData[cId].x || 0) + 1;
     saveUserData(); 
     
     if(currentMode === 'mock') {
-        mockResults.push({ id: cId, result: isCorrect });
-		if(isPracticalReviewMode && isCorrect) {
+        mockResults.push({ id: cId, result: isCorrect });
+        if(isPracticalReviewMode && isCorrect) {
             generatedSets.forEach(s => {
                 if(s.isCompleted && s.results[cId] === false) s.results[cId] = 'reviewed';
             });
@@ -1579,10 +1717,10 @@ function handleAnswer(isCorrect) {
         }
     } else if(currentMode === 'practical') {
         generatedSets[currentPracticalSetIndex].results[cId] = isCorrect;
-        savePracticalState(); // 피드백 1: 결과 기록할 때마다 로컬 스토리지에 저장
-    }
-    
-    currentIndex++; renderCard();
+        savePracticalState(); 
+    }
+    
+    currentIndex++; renderCard();
     if (currentMode === 'mock' && !isPracticalReviewMode) saveMockState();
 }
 function prevCard() { if(currentIndex>0) { currentIndex--; renderCard(); } else showToast("첫 번째 카드입니다."); }
@@ -1640,6 +1778,18 @@ function switchMode(mode) {
         } 
         stopTimer();
     }
+
+else if (mode.startsWith('anki')) {
+        document.getElementById('btn-mode-anki').classList.add('active');
+        if (mode === 'anki-deck') {
+            document.getElementById('anki-deck-view').classList.add('active');
+            renderAnkiDeckList();
+        } else if (mode === 'anki-setup') {
+            document.getElementById('anki-setup-view').classList.add('active');
+        }
+        stopTimer();
+    }
+
     // ★ 실전 모드 연결 추가 ★
     else if (mode === 'practical') {
         document.getElementById('practical-view').classList.add('active');
@@ -2006,16 +2156,18 @@ function saveFieldData() {
 // --- 데이터 내보내기/가져오기 (클립보드 방식) ---
 
 // 1. 내보내기 (복사하기)
+// [수정 후] backupData 안에 'ankiDecks: ankiDecks' 한 줄을 추가합니다.
 async function exportDataToClipboard() {
     const savedMock = localStorage.getItem('cpx_v38_mock_state');
-    const backupData = {
-        cards: cards,
-        userData: userData,
-        cats: collapsedCategories,
-        practicalState: { mode: currentPracticalMode, sets: generatedSets }, // 이 줄 추가됨
+    const backupData = {
+        cards: cards,
+        userData: userData,
+        cats: collapsedCategories,
+        practicalState: { mode: currentPracticalMode, sets: generatedSets },
+        ankiDecks: ankiDecks, // 👈 이 줄을 꼭 추가하세요!
         mockState: savedMock ? JSON.parse(savedMock) : null,
-        date: new Date().toLocaleString()
-    };
+        date: new Date().toLocaleString()
+    };
 
     const jsonString = JSON.stringify(backupData);
 
@@ -2050,16 +2202,18 @@ async function importDataFromClipboard() {
 
 // 3. 가져오기 (수동 입력창 사용) ; 안쓰는 기능이라 삭제하고 파일 형태로 업데이트함 
 // --- 💾 신규 기능: 파일로 내보내기 (권장) ---
+// [수정 후] 마찬가지로 'ankiDecks: ankiDecks' 한 줄을 추가합니다.
 function exportDataToFile() {
     const savedMock = localStorage.getItem('cpx_v38_mock_state');
-    const backupData = {
-        cards: cards,
-        userData: userData,
-        cats: collapsedCategories,
-        practicalState: { mode: currentPracticalMode, sets: generatedSets }, // 이 줄 추가됨
+    const backupData = {
+        cards: cards,
+        userData: userData,
+        cats: collapsedCategories,
+        practicalState: { mode: currentPracticalMode, sets: generatedSets },
+        ankiDecks: ankiDecks, // 👈 이 줄을 꼭 추가하세요!
         mockState: savedMock ? JSON.parse(savedMock) : null,
-        date: new Date().toLocaleString()
-    };
+        date: new Date().toLocaleString()
+    };
     const jsonString = JSON.stringify(backupData);
     
     // Blob 객체 생성 (자바스크립트 데이터를 파일 형태로 묶음)
@@ -2124,6 +2278,11 @@ function processDataRestoration(jsonString) {
             saveCards();
             saveUserData();
             saveCats();
+            // 👇 안키 데이터 복원 로직 추가
+            if (data.ankiDecks) {
+                ankiDecks = data.ankiDecks;
+                localStorage.setItem('cpx_v38_anki_decks', JSON.stringify(ankiDecks));
+            }
             if (data.practicalState) {
                 currentPracticalMode = data.practicalState.mode || 'review';
                 generatedSets = data.practicalState.sets || [];
@@ -2862,24 +3021,248 @@ function handleSwipeLogic() {
         else prevCard();
     }
 }
+
+// ==========================================
+// 안키(Anki) 덱 관련 기능 함수 모음 (완전판)
+// ==========================================
+
+// 날짜 계산 도우미 (한국 시간 기준)
+function getLocalYYYYMMDD() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function addDaysToDate(dateStr, days) {
+    const date = new Date(dateStr);
+    date.setDate(date.getDate() + days);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// 1. 5개 덱 목록 그리기 (Play 버튼, 느낌표 알림, 초기화 버튼 포함)
+// 1. 5개 덱 목록 그리기 (마스터 완료 알림 👑 추가)
+function renderAnkiDeckList() {
+    document.getElementById('anki-daily-limit').value = ankiDailyLimit;
+    const listContainer = document.getElementById('anki-deck-list');
+    listContainer.innerHTML = '';
+    const today = getLocalYYYYMMDD();
+    
+    ankiDecks.forEach(deck => {
+        const count = deck.selectedIds.length;
+        if(!deck.progress) deck.progress = {};
+        
+        let reviewCount = 0;
+        let newCount = 0;
+        let completedCount = 0;
+        let startedTodayCount = 0; 
+        
+        deck.selectedIds.forEach(id => {
+            const prog = deck.progress[id];
+            if (!prog) {
+                newCount++; 
+            } else {
+                if (prog.firstStudyDate === today) startedTodayCount++;
+                if (prog.step >= 5) completedCount++; 
+                else if (prog.nextReviewDate <= today) reviewCount++; 
+            }
+        });
+        
+        const availableNewToday = Math.max(0, ankiDailyLimit - startedTodayCount);
+        const finalNew = Math.min(newCount, availableNewToday);
+        const totalToday = reviewCount + finalNew;
+
+        // 💡 [핵심 추가] 이 덱의 모든 카드를 마스터했는지 확인!
+        const isMastered = (count > 0 && count === completedCount);
+
+        const alertIcon = totalToday > 0 ? `<span style="color:#ef4444; font-size:1.1rem; margin-left:6px; animation: heartBeat 1.5s infinite;">❗️</span>` : '';
+        
+        // 기본 디자인 세팅
+        let bgStyle = "background:white; border-color:#e2e8f0;";
+        let titleHtml = `🗂️ ${deck.name} ${alertIcon}`;
+        let statusHtml = `총 ${count} / 완료 ${completedCount} ⚙️`;
+        let playBtnHtml = `<button class="btn" style="width:auto; padding:0.5rem 0.8rem; background:${totalToday > 0 ? '#2563eb' : '#cbd5e1'}; color:white; font-size:0.9rem; white-space:nowrap;" onclick="startAnkiStudy(${deck.id})" ${totalToday === 0 ? 'disabled' : ''}>▶ ${totalToday}개</button>`;
+
+        // 👑 마스터했을 때의 화려한 디자인 세팅
+        if (isMastered) {
+            bgStyle = "background:#fef9c3; border-color:#fde047;"; // 연한 노란색(금색) 배경
+            titleHtml = `👑 <span style="color:#854d0e;">${deck.name}</span>`; // 왕관 아이콘
+            statusHtml = `<span style="color:#ca8a04; font-weight:800;">완벽 암기 완료! 💯</span>`; // 마스터 텍스트
+            playBtnHtml = `<button class="btn" style="width:auto; padding:0.5rem 0.8rem; background:#ca8a04; color:white; font-size:0.9rem; white-space:nowrap;" disabled>마스터 👑</button>`;
+        }
+
+        listContainer.innerHTML += `
+            <div style="${bgStyle} border-width:1px; border-style:solid; border-radius:12px; display:flex; align-items:center; padding:0.5rem; gap:0.5rem; transition:all 0.3s;">
+                <button class="btn" style="flex:1; background:transparent; color:#334155; display:flex; justify-content:space-between; align-items:center; padding:0.5rem; overflow:hidden;" onclick="openAnkiSetup(${deck.id})">
+                    <span style="font-weight:800; display:flex; align-items:center; white-space:nowrap;">${titleHtml}</span>
+                    <span style="color:#94a3b8; font-size:0.8rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-left:5px;">${statusHtml}</span>
+                </button>
+                <button class="btn" style="width:40px; height:40px; padding:0; background:#f1f5f9; color:#94a3b8; border-radius:8px;" onclick="resetAnkiDeck(${deck.id})" title="학습 기록 초기화">
+                    <svg style="width:1.2rem; height:1.2rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+                ${playBtnHtml}
+            </div>
+        `;
+    });
+}
+
+// 2. 안키 학습 시작 (Play 버튼 클릭 시)
+function startAnkiStudy(deckId) {
+    const deck = ankiDecks.find(d => d.id === deckId);
+    if (!deck) return;
+    currentEditingDeckId = deckId;
+    const today = getLocalYYYYMMDD();
+    
+    let reviewCards = [];
+    let newCardsPool = [];
+    let startedTodayCount = 0;
+
+    deck.selectedIds.forEach(id => {
+        const prog = deck.progress[id];
+        const card = cards.find(c => c.id === id);
+        if (!card) return;
+
+        if (!prog) {
+            newCardsPool.push(card);
+        } else {
+            if (prog.firstStudyDate === today) startedTodayCount++;
+            // 복습 날짜가 되었거나, 오늘 시작했는데 아직 안 끝난 카드들
+            if (prog.step < 5 && (prog.nextReviewDate <= today)) {
+                reviewCards.push(card);
+            }
+        }
+    });
+
+    // 오늘 남은 새 카드 할당량 계산
+    let availableNewCount = Math.max(0, ankiDailyLimit - startedTodayCount);
+    let newCards = newCardsPool.slice(0, availableNewCount);
+    let sessionCards = [...reviewCards, ...newCards];
+
+    if (sessionCards.length === 0) {
+        showToast("오늘 이 덱에서 학습할 카드가 없습니다!");
+        return;
+    }
+
+    ankiSessionQueue = sessionCards;
+    ankiTotalToday = sessionCards.length;
+    ankiCompletedToday = 0;
+    currentMode = 'anki';
+    switchMode('study');
+    renderCard(); 
+}
+
+// 3. 도중에 그만두기 버튼 누를 때
+function stopAnkiStudy() {
+    if(confirm("현재 진행 중인 Anki 학습을 종료하시겠습니까?\n(이미 '알아요'를 누른 카드는 저장되었습니다)")) {
+        switchMode('anki-deck');
+        showToast("학습이 종료되었습니다.");
+    }
+}
+
+// 하루 제한 갯수 저장 함수
+function saveAnkiDailyLimit(val) {
+    ankiDailyLimit = parseInt(val) || 2;
+    localStorage.setItem('cpx_anki_limit', ankiDailyLimit);
+    renderAnkiDeckList(); 
+}
+
+// 4. 특정 덱 설정창 열기
+function openAnkiSetup(deckId) {
+    currentEditingDeckId = deckId;
+    document.getElementById('anki-setup-title').innerText = `덱 ${deckId} 설정`;
+    switchMode('anki-setup');
+    renderAnkiTree();
+}
+
+// 5. 출제 범위 트리 그리기
+function renderAnkiTree() {
+    const root = document.getElementById('anki-tree-root');
+    root.innerHTML = '';
+    
+    const deck = ankiDecks.find(d => d.id === currentEditingDeckId);
+    const groups = {};
+    cards.forEach(c => {
+        if(!groups[c.cat]) groups[c.cat] = [];
+        groups[c.cat].push(c);
+    });
+
+    for(const [cat, items] of Object.entries(groups)) {
+        items.sort((a,b) => parseInt(a.title.match(/^\d+/)?.[0]||0) - parseInt(b.title.match(/^\d+/)?.[0]||0));
+        const catDiv = document.createElement('div');
+        catDiv.className = 'tree-cat';
+        
+        const checkedCount = items.filter(c => deck.selectedIds.includes(c.id)).length;
+
+        catDiv.innerHTML = `
+        <div class="tree-cat-head" onclick="toggleTreeCat(this)">
+            <input type="checkbox" class="tree-chk-cat" onclick="event.stopPropagation(); checkAnkiCat(this)" ${checkedCount > 0 ? 'checked' : ''}>
+            <label>${cat} (${items.length})</label>
+            <span style="font-size:0.8rem; color:#cbd5e1;">▼</span>
+        </div>
+        <div class="tree-items">
+            ${items.map(c => `
+                <div class="tree-item">
+                    <input type="checkbox" class="anki-chk-item" value="${c.id}" ${deck.selectedIds.includes(c.id) ? 'checked' : ''} onchange="updateAnkiScopeCount()">
+                    <label onclick="this.previousElementSibling.click()">${c.title}</label>
+                </div>
+            `).join('')}
+        </div>`;
+        root.appendChild(catDiv);
+    }
+    updateAnkiScopeCount();
+}
+
+function checkAnkiCat(el) {
+    el.parentElement.nextElementSibling.querySelectorAll('.anki-chk-item').forEach(i => i.checked = el.checked);
+    updateAnkiScopeCount();
+}
+
+function toggleAllAnkiTree() {
+    const all = document.querySelectorAll('#anki-tree-root input[type="checkbox"]');
+    const state = Array.from(all).some(c => !c.checked);
+    all.forEach(c => c.checked = state);
+    updateAnkiScopeCount();
+}
+
+function updateAnkiScopeCount() {
+    const total = document.querySelectorAll('.anki-chk-item').length;
+    const checked = document.querySelectorAll('.anki-chk-item:checked').length;
+    const el = document.getElementById('anki-scope-count');
+    if(el) el.innerText = `(${checked} / ${total})`;
+}
+
+function saveAnkiDeck() {
+    const chks = document.querySelectorAll('.anki-chk-item:checked');
+    const selectedIds = Array.from(chks).map(c => parseInt(c.value));
+    const deckIndex = ankiDecks.findIndex(d => d.id === currentEditingDeckId);
+
+    if(deckIndex > -1) {
+        ankiDecks[deckIndex].selectedIds = selectedIds;
+        localStorage.setItem('cpx_v38_anki_decks', JSON.stringify(ankiDecks));
+        showToast(`덱 ${currentEditingDeckId} 설정이 저장되었습니다.`);
+        switchMode('anki-deck');
+    }
+}
+
+// 특정 덱의 안키 학습 기록만 초기화하는 함수
+function resetAnkiDeck(deckId) {
+    if(confirm(`덱 ${deckId}의 모든 안키 학습 기록(복습 주기, 단계 등)을 초기화하시겠습니까?\n\n※ 주의: '알아요'라고 체크했던 기록이 모두 사라지며 1일 차부터 다시 시작하게 됩니다. (선택한 주제 목록은 유지됩니다)`)) {
+        const deck = ankiDecks.find(d => d.id === deckId);
+        if(deck) {
+            deck.progress = {}; 
+            localStorage.setItem('cpx_v38_anki_decks', JSON.stringify(ankiDecks));
+            renderAnkiDeckList();
+            showToast(`덱 ${deckId}의 학습 기록이 초기화되었습니다.`);
+        }
+    }
+}
+
 init();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
